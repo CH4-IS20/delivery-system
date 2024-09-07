@@ -22,7 +22,7 @@ public class Product extends BaseEntity{
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
     @Setter

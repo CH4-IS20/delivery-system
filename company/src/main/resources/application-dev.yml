@@ -11,9 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  h2:
-    console:
-      enabled: false
 
 server:
   port: ${COMPANY_SERVER_PORT}
