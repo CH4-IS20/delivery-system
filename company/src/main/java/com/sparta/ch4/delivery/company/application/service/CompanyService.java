@@ -4,6 +4,7 @@ import com.sparta.ch4.delivery.company.application.dto.CompanyDto;
 import com.sparta.ch4.delivery.company.domain.service.CompanyDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ public class CompanyService {
         return companyDomainService.createCompany(dto);
     }
 
+    @Transactional(readOnly = true)
     public CompanyDto getCompanyById(UUID id) {
         return companyDomainService.getCompanyById(id);
     }

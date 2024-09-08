@@ -19,7 +19,6 @@ public class ProductDomainService {
     private final CompanyRepository companyRepository;
 
     //TODO : 에러 내용 정의
-    @Transactional
     public ProductDto createProduct(ProductDto productDto) {
         Company company = companyRepository.findById(productDto.companyId()).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 업체를 찾을 수 없습니다.")
@@ -29,7 +28,6 @@ public class ProductDomainService {
     }
 
     //TODO : 에러 내용 정의
-    @Transactional(readOnly = true)
     public ProductDto getProductById(UUID productId) {
         return productRepository.findById(productId).map(ProductDto::from).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 상품을 찾을 수 없습니다.")

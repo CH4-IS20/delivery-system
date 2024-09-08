@@ -21,7 +21,6 @@ public class CompanyDomainService {
     }
 
     //TODO : 에러 내용 정의
-    @Transactional(readOnly = true)
     public CompanyDto getCompanyById(UUID id) {
         return companyRepository.findById(id).map(CompanyDto::from).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 업체가 존재하지 않습니다.")
