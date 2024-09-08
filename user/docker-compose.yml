@@ -1,0 +1,41 @@
+services:
+  user-db:
+    image: postgres:latest
+    container_name: user-db
+    environment:
+      POSTGRES_USER: ${USER_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${USER_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${USER_SERVER_DB_NAME}
+    ports:
+      - "${USER_SERVER_DB_PORT}:${USER_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${USER_SERVER_DB_VOLUMES}
+    networks:
+      - delivery-msa-net
+
+  user-app:
+    container_name: user-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - user-db
+    restart: always
+    ports:
+      - "${USER_SERVER_PORT}:${USER_SERVER_PORT}"
+    networks:
+      - delivery-msa-net
+    environment:
+      SPRING_DATASOURCE_URL: ${USER_SERVER_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${USER_SERVER_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${USER_SERVER_DB_PASSWORD}
+      USER_SERVER_PORT: ${USER_SERVER_PORT}
+      USER_SERVER_HOST: ${USER_SERVER_HOST}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+
+networks:
+  delivery-msa-net:
+    external: true
+
+volumes:
+  postgres-data:

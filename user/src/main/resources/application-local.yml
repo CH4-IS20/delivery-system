@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: user
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:test'
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+server:
+  port: ${USER_SERVER_PORT}
+
+eureka:
+  instance:
+    hostname: ${USER_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: "${EUREKA_SERVER_URL}"
+    register-with-eureka: true
+    fetch-registry: true
