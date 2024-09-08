@@ -1,0 +1,41 @@
+services:
+  company-db:
+    image: postgres:latest
+    container_name: company-db
+    environment:
+      POSTGRES_USER: ${COMPANY_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${COMPANY_SERVER_DB_NAME}
+    ports:
+      - "${COMPANY_SERVER_DB_PORT}:${COMPANY_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${COMPANY_SERVER_DB_VOLUMES}
+    networks:
+      - delivery-msa-net
+
+  company-app:
+    container_name: company-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - company-db
+    restart: always
+    ports:
+      - "${COMPANY_SERVER_PORT}:${COMPANY_SERVER_PORT}"
+    networks:
+      - delivery-msa-net
+    environment:
+      SPRING_DATASOURCE_URL: ${COMPANY_SERVER_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${COMPANY_SERVER_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
+      COMPANY_SERVER_PORT: ${COMPANY_SERVER_PORT}
+      COMPANY_SERVER_HOST: ${COMPANY_SERVER_HOST}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+
+networks:
+  delivery-msa-net:
+    external: true
+
+volumes:
+  postgres-data:
