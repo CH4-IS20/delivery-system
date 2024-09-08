@@ -14,6 +14,7 @@ public class CompanyService {
 
     private final CompanyDomainService companyDomainService;
 
+    @Transactional
     public CompanyDto createCompany(CompanyDto dto) {
         return companyDomainService.createCompany(dto);
     }
