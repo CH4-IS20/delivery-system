@@ -1,0 +1,41 @@
+services:
+  hub-db:
+    image: postgres:16.4
+    container_name: hub-db
+    environment:
+      POSTGRES_USER: ${HUB_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${HUB_SERVER_DB_NAME}
+    ports:
+      - "${HUB_SERVER_DB_PORT}:${HUB_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${HUB_SERVER_DB_VOLUMES}
+    networks:
+      - delivery-msa-net
+
+  hub-app:
+    container_name: hub-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - hub-db
+    restart: always
+    ports:
+      - "${HUB_SERVER_PORT}:${HUB_SERVER_PORT}"
+    networks:
+      - delivery-msa-net
+    environment:
+      SPRING_DATASOURCE_URL: ${HUB_SERVER_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${HUB_SERVER_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
+      HUB_SERVER_PORT: ${HUB_SERVER_PORT}
+      HUB_SERVER_HOST: ${HUB_SERVER_HOST}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+
+networks:
+  delivery-msa-net:
+    external: true
+
+volumes:
+  postgres-data:
