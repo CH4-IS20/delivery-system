@@ -1,6 +1,6 @@
 services:
   user-db:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: user-db
     environment:
       POSTGRES_USER: ${USER_SERVER_DB_USERNAME}
