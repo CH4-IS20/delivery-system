@@ -1,5 +1,6 @@
 package com.sparta.ch4.delivery.company.presentation.response;
 
+import com.sparta.ch4.delivery.company.application.dto.CompanyDto;
 import com.sparta.ch4.delivery.company.application.dto.ProductDto;
 import lombok.Builder;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
 @Builder
 public record ProductResponse(
         UUID id,
-        UUID companyId,
+        CompanyResponse company,
         UUID hubId,
         String name,
         Integer quantity,
@@ -20,7 +21,14 @@ public record ProductResponse(
     public static ProductResponse from(ProductDto dto) {
         return ProductResponse.builder()
                 .id(dto.id())
-                .companyId(dto.companyId())
+                .company(CompanyResponse.from(CompanyDto.builder()
+                        .id(dto.companyId())
+                        .hubId(dto.companyHubId())
+                        .type(dto.companyType())
+                        .name(dto.companyName())
+                        .address(dto.companyAddress())
+                        .createdAt(dto.companyCreatedAt())
+                        .build()))
                 .hubId(dto.hubId())
                 .name(dto.name())
                 .quantity(dto.quantity())
