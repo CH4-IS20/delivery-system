@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: hub
+  config:
+    activate:
+      on-profile: dev
+  #docker에서 DB 환경변수를 넣어주기
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: ${HUB_SERVER_PORT}
+
+eureka:
+  instance:
+    hostname: ${HUB_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: "${EUREKA_SERVER_URL}"
+    register-with-eureka: true  # Eureka 서버에 등록
+    fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
