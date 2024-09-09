@@ -2,7 +2,10 @@ package com.sparta.ch4.delivery.company.application.service;
 
 import com.sparta.ch4.delivery.company.application.dto.CompanyDto;
 import com.sparta.ch4.delivery.company.domain.service.CompanyDomainService;
+import com.sparta.ch4.delivery.company.domain.type.CompanySearchType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,7 @@ public class CompanyService {
 
     private final CompanyDomainService companyDomainService;
 
+    //TODO : Hub 조회 및 검증 로직 작성
     @Transactional
     public CompanyDto createCompany(CompanyDto dto) {
         return companyDomainService.createCompany(dto);
@@ -24,4 +28,19 @@ public class CompanyService {
         return companyDomainService.getCompanyById(id);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CompanyDto> getAllCompanies(CompanySearchType searchType, String searchValue, Pageable pageable) {
+        return companyDomainService.getAllCompanies(searchType, searchValue, pageable);
+    }
+
+    //TODO : Hub 조회 및 검증 로직 작성
+    @Transactional
+    public CompanyDto updateCompany(UUID companyId, CompanyDto dto) {
+        return companyDomainService.updateCompany(companyId, dto);
+    }
+
+    @Transactional
+    public void deleteCompany(UUID companyId, String userId) {
+        companyDomainService.deleteCompany(companyId, userId);
+    }
 }
