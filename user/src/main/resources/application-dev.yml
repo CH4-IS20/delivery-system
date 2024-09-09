@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: user
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: ${USER_SERVER_PORT}
+
+eureka:
+  instance:
+    hostname: ${USER_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: "${EUREKA_SERVER_URL}"
+    register-with-eureka: true
+    fetch-registry: true
