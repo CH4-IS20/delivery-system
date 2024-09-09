@@ -15,6 +15,8 @@ public record ProductDto(
         String companyName,
         CompanyType companyType,
         String companyAddress,
+        UUID companyHubId,
+        LocalDateTime companyCreatedAt,
         UUID hubId,
         String name,
         Integer quantity,
@@ -34,6 +36,8 @@ public record ProductDto(
                 .companyName(entity.getCompany().getName())
                 .companyType(entity.getCompany().getType())
                 .companyAddress(entity.getCompany().getAddress())
+                .companyHubId(entity.getCompany().getHubId())
+                .companyCreatedAt(entity.getCompany().getCreatedAt())
                 .hubId(entity.getHubId())
                 .name(entity.getName())
                 .quantity(entity.getQuantity())

@@ -9,7 +9,6 @@ import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.company.presentation.response.CompanyResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Parameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,7 +36,7 @@ public class CompanyController {
         );
     }
 
-    @GetMapping()
+    @GetMapping
     public CommonResponse<Page<CompanyResponse>> getCompanies(
             @RequestParam(required = false, name = "searchType") CompanySearchType searchType,
             @RequestParam(required = false, name = "searchValue") String searchValue,
@@ -75,11 +74,10 @@ public class CompanyController {
     // Header 에 들어온 userId 로 deletedBy 설정
     @DeleteMapping("/{companyId}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public CommonResponse<Void> delete(
+    public void delete(
             @PathVariable(name = "companyId") UUID companyId,
             @RequestHeader("X-UserId") String userId
     ) {
         companyService.deleteCompany(companyId, userId);
-        return CommonResponse.success("음식점 삭제 성공");
     }
 }
