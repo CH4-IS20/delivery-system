@@ -2,14 +2,10 @@ package com.sparta.ch4.delivery.company.presentation.controller;
 
 
 import com.sparta.ch4.delivery.company.application.service.ProductService;
-import com.sparta.ch4.delivery.company.domain.type.CompanySearchType;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;
-import com.sparta.ch4.delivery.company.presentation.request.CompanyCreateRequest;
-import com.sparta.ch4.delivery.company.presentation.request.CompanyUpdateRequest;
 import com.sparta.ch4.delivery.company.presentation.request.ProductCreateRequest;
 import com.sparta.ch4.delivery.company.presentation.request.ProductUpdateRequest;
 import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
-import com.sparta.ch4.delivery.company.presentation.response.CompanyResponse;
 import com.sparta.ch4.delivery.company.presentation.response.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +35,7 @@ public class ProductController {
         );
     }
 
-    @GetMapping()
+    @GetMapping
     public CommonResponse<Page<ProductResponse>> getProducts(
             @RequestParam(required = false, name = "companyId") UUID companyId,
             @RequestParam(required = false, name = "hubId") UUID hubId,
@@ -78,11 +74,10 @@ public class ProductController {
     // Header 에 들어온 userId 로 deletedBy 설정
     @DeleteMapping("/{productId}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public CommonResponse<Void> delete(
+    public void delete(
             @PathVariable(name = "productId") UUID productId,
             @RequestHeader("X-UserId") String userId
     ) {
         productService.deleteProduct(productId, userId);
-        return CommonResponse.success("상품 삭제 성공");
     }
 }
