@@ -80,6 +80,6 @@ public class CompanyController {
             @RequestHeader("X-UserId") String userId
     ) {
         companyService.deleteCompany(companyId, userId);
-        return CommonResponse.success("음식점 삭제 성공");
+        return CommonResponse.success("업체 삭제 성공");
     }
 }

@@ -46,6 +46,7 @@ public class CompanyDomainService {
         company.setName(dto.name());
         company.setType(dto.type());
         company.setAddress(dto.address());
+        company.setUpdatedBy(dto.updatedBy());
         // 저장
         return CompanyDto.from(companyRepository.save(company));
     }

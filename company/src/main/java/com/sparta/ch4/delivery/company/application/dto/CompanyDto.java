@@ -20,7 +20,7 @@ public record CompanyDto(
         String updatedBy,
         LocalDateTime deletedAt,
         String deletedBy,
-        boolean isDeleted
+        Boolean isDeleted
 ) {
 
     public static CompanyDto from(Company entity) {
