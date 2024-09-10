@@ -1,8 +1,9 @@
-package com.example.hub.domain.repository;
+package com.example.hub.infrastructure.repository;
 
 import com.example.hub.application.dto.HubDto;
 import com.example.hub.domain.model.Hub;
 import com.example.hub.domain.model.QHub;
+import com.example.hub.domain.repository.HubRepositoryCustom;
 import com.example.hub.presentation.response.HubResponse;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,13 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-
+@Repository
 @RequiredArgsConstructor
 public class HubRepositoryImpl implements HubRepositoryCustom {
 
