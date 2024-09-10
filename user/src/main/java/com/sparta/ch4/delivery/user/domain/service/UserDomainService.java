@@ -55,6 +55,7 @@ public class UserDomainService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("ID 에 해당하는 사용자가 존재하지 않습니다."));
         user.delete(deleteBy);
+        userRepository.save(user);
     }
 
     private void checkDuplicate(String username, String email) {
