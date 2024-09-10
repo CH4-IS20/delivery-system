@@ -13,7 +13,7 @@ spring:
       enabled: true
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 server:
   port: ${HUB_SERVER_PORT}
