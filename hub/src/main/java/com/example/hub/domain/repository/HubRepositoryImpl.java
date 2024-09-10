@@ -1,8 +1,8 @@
-package com.example.hub.infrastructure.repository;
+package com.example.hub.domain.repository;
 
 import com.example.hub.application.dto.HubDto;
 import com.example.hub.domain.model.Hub;
-import com.example.hub.domain.repository.HubRepositoryCustom;
+import com.example.hub.domain.model.QHub;
 import com.example.hub.presentation.response.HubResponse;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.OrderSpecifier;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.hub.domain.model.QHub.hub;
 
 
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class HubRepositoryImpl implements HubRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    QHub hub = QHub.hub;
 
     @Override
     public Page<HubResponse> searchHub(String searchValue, Pageable pageable) {
