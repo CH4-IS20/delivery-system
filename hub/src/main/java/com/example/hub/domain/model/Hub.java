@@ -1,7 +1,8 @@
 package com.example.hub.domain.model;
 
 
-import com.example.hub.presentation.request.HubUpdateRequest;
+import com.example.hub.domain.type.HubAddress;
+import com.example.hub.presentation.request.HubCreateRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,9 +35,9 @@ public class Hub extends BaseEntity {
     private double longitude;
 
 
-    public void update(HubUpdateRequest request, double lat, double lon) {
+    public void update(HubCreateRequest request, String address, double lat, double lon) {
         this.name = request.name();
-        this.address = request.address();
+        this.address =address ;
         this.latitude = lat;
         this.longitude = lon;
     }

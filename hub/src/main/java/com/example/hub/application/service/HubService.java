@@ -2,7 +2,6 @@ package com.example.hub.application.service;
 
 import com.example.hub.domain.service.HubDomainService;
 import com.example.hub.presentation.request.HubCreateRequest;
-import com.example.hub.presentation.request.HubUpdateRequest;
 import com.example.hub.presentation.response.HubResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,7 +37,7 @@ public class HubService {
 
     // 허브 수정
     @Transactional
-    public HubResponse updateHub(UUID id, HubUpdateRequest request) {
+    public HubResponse updateHub(UUID id, HubCreateRequest request) {
         return hubDomainService.updateHub(id,request);
     }
 
