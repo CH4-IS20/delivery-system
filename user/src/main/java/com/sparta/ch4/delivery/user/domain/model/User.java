@@ -1,7 +1,9 @@
 package com.sparta.ch4.delivery.user.domain.model;
 
+import com.sparta.ch4.delivery.user.application.dto.UserUpdateDto;
 import com.sparta.ch4.delivery.user.domain.type.UserRole;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 
 import java.util.Objects;
@@ -50,6 +52,22 @@ public class User extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void update(UserUpdateDto dto, String password) {
+        this.username = dto.username();
+        this.email = dto.email();
+        this.role = dto.role();
+        this.password = password;
+        this.hubId = dto.hubId();
+        this.companyId = dto.companyId();
+        this.setUpdatedBy(dto.updatedBy());
+    }
+
+    public void delete(String deletedBy) {
+        this.setDeletedBy(deletedBy);
+        this.setDeletedAt(LocalDateTime.now());
+        this.setIsDeleted(true);
     }
 
 }
