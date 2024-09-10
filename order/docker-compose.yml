@@ -1,6 +1,6 @@
 services:
   order-db:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: order-db
     environment:
       POSTGRES_USER: ${ORDER_SERVER_DB_USERNAME}
