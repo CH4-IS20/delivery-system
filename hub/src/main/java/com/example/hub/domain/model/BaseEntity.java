@@ -1,8 +1,6 @@
 package com.example.hub.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,15 +16,16 @@ public abstract class BaseEntity {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @Setter
     @Column(name = "created_by", length = 100)
     private String createdBy;
 
-
     @LastModifiedDate
     @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
     @Setter
@@ -48,5 +47,6 @@ public abstract class BaseEntity {
     public BaseEntity(){
         this.isDeleted = false;
     }
+
 
 }
