@@ -1,0 +1,41 @@
+services:
+  order-db:
+    image: postgres:16.4
+    container_name: order-db
+    environment:
+      POSTGRES_USER: ${ORDER_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${ORDER_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${ORDER_SERVER_DB_NAME}
+    ports:
+      - "${ORDER_SERVER_DB_PORT}:${ORDER_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${ORDER_SERVER_DB_VOLUMES}
+    networks:
+      - delivery-msa-net
+
+  order-app:
+    container_name: order-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - order-db
+    restart: always
+    ports:
+      - "${ORDER_SERVER_PORT}:${ORDER_SERVER_PORT}"
+    networks:
+      - delivery-msa-net
+    environment:
+      SPRING_DATASOURCE_URL: ${ORDER_SERVER_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${ORDER_SERVER_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${ORDER_SERVER_DB_PASSWORD}
+      ORDER_SERVER_PORT: ${ORDER_SERVER_PORT}
+      ORDER_SERVER_HOST: ${ORDER_SERVER_HOST}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+
+networks:
+  delivery-msa-net:
+    external: true
+
+volumes:
+  postgres-data:
