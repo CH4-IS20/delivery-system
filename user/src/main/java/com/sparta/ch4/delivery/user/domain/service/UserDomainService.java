@@ -67,10 +67,4 @@ public class UserDomainService {
         }
     }
 
-    private void checkPassword(String currentPassword, String updatePassword) {
-        if (!passwordEncoder.matches(currentPassword, updatePassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-    }
-
 }
