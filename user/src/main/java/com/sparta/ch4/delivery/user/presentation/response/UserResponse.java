@@ -2,6 +2,7 @@ package com.sparta.ch4.delivery.user.presentation.response;
 
 import com.sparta.ch4.delivery.user.application.dto.UserDto;
 import com.sparta.ch4.delivery.user.application.dto.UserPageDto;
+import com.sparta.ch4.delivery.user.domain.model.User;
 import com.sparta.ch4.delivery.user.domain.type.UserRole;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -17,6 +18,18 @@ public record UserResponse(
         UserRole role,
         LocalDateTime createdAt
 ) {
+    public static UserResponse fromUserEntity(User entity) {
+        return UserResponse.builder()
+                .id(entity.getId())
+                .hubId(entity.getHubId())
+                .companyId(entity.getCompanyId())
+                .username(entity.getUsername())
+                .email(entity.getEmail())
+                .role(entity.getRole())
+                .createdAt(entity.getCreatedAt())
+                .build();
+    }
+
     public static UserResponse fromUserDto(UserDto dto) {
         return UserResponse.builder()
                 .id(dto.id())
