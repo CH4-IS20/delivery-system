@@ -25,20 +25,40 @@ repositories {
 
 ext {
 	set('springCloudVersion', "2023.0.3")
+	set('querydslVersion', "5.0.0")
 }
 
 dependencies {
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// queryDSL
+	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	compileOnly 'org.projectlombok:lombok'
+
+	// db
 	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.h2database:h2'
+
+	annotationProcessor 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// test에서 사용할 springframework 라이브러리 의존시킴
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompileOnly 'org.projectlombok:lombok:1.18.20' // 테스트 의존성 추가
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.20' // 테스트 의존성 추가
 }
 
 dependencyManagement {
@@ -47,6 +67,15 @@ dependencyManagement {
 	}
 }
 
+jar {
+	enabled = false
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def querydslSrcDir='src/main/generated'
+clean{
+	delete file(querydslSrcDir)
 }
