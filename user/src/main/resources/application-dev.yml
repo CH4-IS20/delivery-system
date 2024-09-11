@@ -27,3 +27,6 @@ eureka:
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   expiration-time: ${JWT_EXPIRATION_TIME}
+
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL}

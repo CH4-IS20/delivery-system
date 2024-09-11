@@ -14,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,18 +25,9 @@ public class SlackController {
 
     private final SlackService slackService;
 
-    // TODO: Slack WebHook 연동
-//    @PostMapping
-//    public CommonResponse<SlackResponse> sendSlackMessage(
-//    }
-
-
-    // FIXME: Slack App에서 보내는 메시지를 받아야 합니다. 현재는 임시로 구현되어 있습니다.
-    @PostMapping("/events")
-    public CommonResponse<SlackResponse> receiveSlackMessage(
-            @Valid @RequestBody SlackSendMessageRequest request,
-            @RequestHeader("X-UserId") String userId) {
-        return CommonResponse.success(slackService.saveSlackMessage(request.toDto(userId)));
+    @PostMapping
+    public CommonResponse<SlackResponse> sendSlackMessage(@Valid @RequestBody SlackSendMessageRequest request){
+        return CommonResponse.success(slackService.sendSlackMessage(request.toDto()));
     }
 
     @GetMapping
