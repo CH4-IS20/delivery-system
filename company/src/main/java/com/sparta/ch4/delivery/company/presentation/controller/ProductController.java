@@ -4,6 +4,7 @@ package com.sparta.ch4.delivery.company.presentation.controller;
 import com.sparta.ch4.delivery.company.application.service.ProductService;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;
 import com.sparta.ch4.delivery.company.presentation.request.ProductCreateRequest;
+import com.sparta.ch4.delivery.company.presentation.request.ProductQuantityUpdateRequest;
 import com.sparta.ch4.delivery.company.presentation.request.ProductUpdateRequest;
 import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.company.presentation.response.ProductResponse;
@@ -79,5 +80,14 @@ public class ProductController {
             @RequestHeader("X-UserId") String userId
     ) {
         productService.deleteProduct(productId, userId);
+    }
+
+    @PutMapping("/api/products/{productId}/quantity")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateQuantity(
+            @PathVariable(name = "productId") UUID productId,
+            @RequestBody @Valid ProductQuantityUpdateRequest request
+    ){
+      productService.updateProductQuantity(productId, request.quantity(), request.upAndDown());
     }
 }

@@ -1,7 +1,10 @@
 package com.sparta.ch4.delivery.company.application.service;
 
 import com.sparta.ch4.delivery.company.application.dto.ProductDto;
+import com.sparta.ch4.delivery.company.domain.model.Company;
+import com.sparta.ch4.delivery.company.domain.model.Product;
 import com.sparta.ch4.delivery.company.domain.service.ProductDomainService;
+import com.sparta.ch4.delivery.company.domain.type.CompanyType;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +34,10 @@ class ProductServiceTest {
     private ProductDomainService productDomainService;
 
     private ProductDto productDto;
+    private Product product;
     private UUID productId;
     private UUID companyId;
+    private Company company;
     private UUID hubId;
     private Pageable pageable;
 
@@ -42,7 +47,6 @@ class ProductServiceTest {
         companyId = UUID.randomUUID();
         hubId = UUID.randomUUID();
         pageable = Pageable.ofSize(10);
-
         productDto = ProductDto.builder()
                 .id(productId)
                 .companyId(companyId)
@@ -50,12 +54,18 @@ class ProductServiceTest {
                 .name("Test Product")
                 .quantity(100)
                 .build();
+        product = Product.builder().id(productId)
+                .company(Company.builder().id(companyId).build())
+                .hubId(hubId).name("Test Product")
+                .quantity(100).build();
+        // 기본 생성자 취소하기
+        product.setIsDeleted(null);
     }
 
     @Test
     void testCreateProduct() {
         // Arrange
-        when(productDomainService.createProduct(any(ProductDto.class))).thenReturn(productDto);
+        when(productDomainService.createProduct(any(ProductDto.class))).thenReturn(product);
 
         // Act
         ProductDto result = productService.createProduct(productDto);
@@ -69,7 +79,7 @@ class ProductServiceTest {
     @Test
     void testGetProductById() {
         // Arrange
-        when(productDomainService.getProductById(any(UUID.class))).thenReturn(productDto);
+        when(productDomainService.getProductById(any(UUID.class))).thenReturn(product);
 
         // Act
         ProductDto result = productService.getProductById(productId);
@@ -83,7 +93,7 @@ class ProductServiceTest {
     @Test
     void testGetAllProducts() {
         // Arrange
-        Page<ProductDto> productPage = new PageImpl<>(Collections.singletonList(productDto));
+        Page<Product> productPage = new PageImpl<>(Collections.singletonList(product));
         when(productDomainService.getAllProducts(any(UUID.class), any(UUID.class), any(ProductSearchType.class), anyString(), any(Pageable.class)))
                 .thenReturn(productPage);
 
@@ -100,7 +110,7 @@ class ProductServiceTest {
     @Test
     void testUpdateProduct() {
         // Arrange
-        when(productDomainService.updateProduct(any(UUID.class), any(ProductDto.class))).thenReturn(productDto);
+        when(productDomainService.updateProduct(any(UUID.class), any(ProductDto.class))).thenReturn(product);
 
         // Act
         ProductDto result = productService.updateProduct(productId, productDto);
