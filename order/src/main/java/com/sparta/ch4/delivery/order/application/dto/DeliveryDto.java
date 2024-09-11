@@ -22,6 +22,7 @@ public record DeliveryDto(
         UUID endHub,        // 배송 목적지 허브
         String deliveryAddress,     // 배송지(수령업체주소)
         String recipient,  // 수령자(DeliveryManager - 업체소속)
-        UUID recipientSlack     // 수령자 slackID
+        String recipientSlack,     // 수령자 slack id
+        Boolean isDeleted
 ) {
 }

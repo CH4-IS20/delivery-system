@@ -1,7 +1,9 @@
 package com.sparta.ch4.delivery.order.application.dto;
 
 import com.sparta.ch4.delivery.order.domain.model.Order;
+import com.sparta.ch4.delivery.order.domain.type.DeliveryStatus;
 import com.sparta.ch4.delivery.order.domain.type.OrderStatus;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,10 @@ public record OrderDto(
         Integer quantity, // 주문 상품 수량
         LocalDateTime orderDate,  // 주문 일자 및 시간
         OrderStatus status,  // 주문 상태
+        DeliveryStatus deliveryStatus, // 배송 현황
+        String receiptAddress,  // 수령 업체 주소
+        String recipientName,   // 수령인 이름
+        String recipientSlack,  // 수령자 슬랭 아이디
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime updatedAt,
@@ -36,7 +42,7 @@ public record OrderDto(
                 .orderDate(orderDate)
                 .status(status)
                 .build();
-        order.setCreatedBy(userId.toString());
+        order.setCreatedBy(createdBy);
         return order;
     }
 
@@ -50,6 +56,11 @@ public record OrderDto(
                 .quantity(entity.getQuantity())
                 .orderDate(entity.getOrderDate())
                 .status(entity.getStatus())
+                .deliveryId(entity.getDelivery().getId())
+                .deliveryStatus(entity.getDelivery().getStatus())
+                .receiptAddress(entity.getDelivery().getDeliveryAddress())
+                .recipientName(entity.getDelivery().getRecipient())
+                .recipientSlack(entity.getDelivery().getRecipientSlack())
                 .build();
     }
 }

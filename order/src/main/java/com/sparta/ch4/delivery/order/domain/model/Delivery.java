@@ -45,11 +45,11 @@ public class Delivery extends BaseEntity {
 
     @Setter
     @Column(name = "recipient", length = 100, nullable = false)
-    private String recipient;  // 수령인
+    private String recipient;  // 수령인 username
 
     @Setter
     @Column(name = "recipient_slack", nullable = false)
-    private UUID recipientSlack;
+    private String recipientSlack; // 수령인 슬랙 id (slack DB PK 가 아님)
 
     @Override
     public boolean equals(Object o) {
