@@ -21,7 +21,7 @@ public record SlackMessageDto (
                 .user(user)
                 .message(message)
                 .build();
-        slack.setCreatedBy(userSlackId);
+        slack.setCreatedBy(String.valueOf(userId));
         return slack;
     }
 
