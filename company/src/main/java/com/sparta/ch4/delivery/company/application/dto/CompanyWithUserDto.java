@@ -12,11 +12,11 @@ public record CompanyWithUserDto(
         String name,
         CompanyType type,
         String recipient,  // 주문 수령자
-        UUID recipientSlack,  // 주문 수령자 slackID
+        String recipientSlack,  // 주문 수령자 slackID
         String address
 ) {
 
-    public static CompanyWithUserDto fromDtoAndUserInfo(CompanyDto companyDto, String recipient, UUID recipientSlack) {
+    public static CompanyWithUserDto fromDtoAndUserInfo(CompanyDto companyDto, String recipient, String recipientSlack) {
         return CompanyWithUserDto.builder()
                 .id(companyDto.id())
                 .hubId(companyDto.hubId())

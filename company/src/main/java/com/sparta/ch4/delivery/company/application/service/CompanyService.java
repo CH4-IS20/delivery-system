@@ -2,7 +2,6 @@ package com.sparta.ch4.delivery.company.application.service;
 
 import com.sparta.ch4.delivery.company.application.dto.CompanyDto;
 import com.sparta.ch4.delivery.company.application.dto.CompanyWithUserDto;
-import com.sparta.ch4.delivery.company.domain.model.Company;
 import com.sparta.ch4.delivery.company.domain.service.CompanyDomainService;
 import com.sparta.ch4.delivery.company.domain.type.CompanySearchType;
 import com.sparta.ch4.delivery.company.infrastructure.client.UserClient;

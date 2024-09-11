@@ -11,5 +11,5 @@ public record UserResponse(
         String username,
         String email,
         UserRole role,
-        UUID slackId
+        String slackId
 ){}
