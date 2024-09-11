@@ -8,26 +8,26 @@ spring:
     gateway:
       routes:
         - id: user
-          uri: http://localhost:19091
+          uri: http://${USER_SERVER_HOST}:${USER_SERVER_PORT}
           predicates:
             - Path=/api/users/**
             - Path=/api/auth/**
 
         - id: company
-          uri: http://localhost:19092
+          uri: http://${COMPANY_SERVER_HOST}:${COMPANY_SERVER_PORT}
           predicates:
             - Path=/api/companies/**
             - Path=/api/products/**
 
         - id: hub
-          uri: http://localhost:19093
+          uri: http://${HUB_SERVER_HOST}:${HUB_SERVER_HOST}
           predicates:
             - Path=/api/hubs/**
             - Path=/api/hub-routes/**
             - Path=/api/delivery-managers/**
 
         - id: delivery
-          uri: http://localhost:19094
+          uri: http://${DELIVERY_SERVER_HOST}:${DELIVERY_SERVER_HOST}
           predicates:
             - Path=/api/deliveries/**
             - Path=/api/orders/**
