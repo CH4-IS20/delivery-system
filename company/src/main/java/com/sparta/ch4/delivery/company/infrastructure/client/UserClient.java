@@ -1,0 +1,18 @@
+package com.sparta.ch4.delivery.company.infrastructure.client;
+
+
+import com.sparta.ch4.delivery.company.infrastructure.client.response.UserResponse;
+import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.UUID;
+
+@FeignClient(name = "user")
+public interface UserClient {
+
+    @GetMapping("/api/users/recipient")
+    CommonResponse<UserResponse> getOrderRecipientInCompany(@RequestParam(name = "companyId") UUID companyId);
+
+}

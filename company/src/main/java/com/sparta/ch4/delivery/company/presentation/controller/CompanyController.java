@@ -7,6 +7,7 @@ import com.sparta.ch4.delivery.company.presentation.request.CompanyCreateRequest
 import com.sparta.ch4.delivery.company.presentation.request.CompanyUpdateRequest;
 import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.company.presentation.response.CompanyResponse;
+import com.sparta.ch4.delivery.company.presentation.response.CompanyWithUserForOrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -59,6 +60,15 @@ public class CompanyController {
         );
     }
 
+    //TODO : 유저 쪽 companyID 에 해당하는 유저 랜덤 배정 로직 구현
+    @GetMapping("/api/companies/recipient/{companyId}")
+    CommonResponse<CompanyWithUserForOrderResponse> getCompanyInfoForOrder(@PathVariable UUID companyId){
+        return CommonResponse.success(
+                CompanyWithUserForOrderResponse.from(companyService.getCompanyAndUserForOrder(companyId))
+        );
+    }
+
+
     // Header 에 들어온 userId 로 updatedBy 설정
     @PutMapping("/{companyId}")
     public CommonResponse<CompanyResponse> updateCompany(
@@ -80,4 +90,6 @@ public class CompanyController {
     ) {
         companyService.deleteCompany(companyId, userId);
     }
+
+
 }
