@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "p_order")
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,19 +39,17 @@ public class Order {
     private UUID productId;
 
     @Setter
-    @Column(name = "delivery_id")
-    private UUID deliveryId;;	  //	배송 ID
-
-    @Setter
     private Integer quantity;	 //	주문 수량
 
     @Setter
-    private LocalDateTime order_date;
+    private LocalDateTime orderDate;
 
     @Setter
     @Enumerated(EnumType.STRING)
     private OrderStatus status;	 // 	주문 상태 (pending, completed, canceled)
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Delivery delivery;
 
     @Override
     public boolean equals(Object o) {
