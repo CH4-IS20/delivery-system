@@ -3,6 +3,7 @@ package com.sparta.ch4.delivery.order.presentation.request;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
 import com.sparta.ch4.delivery.order.domain.type.OrderStatus;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,17 @@ public record OrderCreateRequest(
 
         @NotNull(message = "주문 상품 수량은 비어있을 수 없습니다.")
         @Min(value = 0)
-        Integer quantity
+        Integer quantity,
+
+        @NotBlank(message = "수령 업체 주소는 비어있을 수 없습니다.")
+        String receiptAddress,
+
+        @NotBlank(message = "수령인 이름은 비어있을 수 없습니다.")
+        String recipientName,
+
+        @NotBlank(message = "수령인 슬랙 아이디는 비어있을 수 없습니다.")
+        String recipientSlack
+
 ) {
 
 
@@ -33,6 +44,9 @@ public record OrderCreateRequest(
                 .quantity(quantity)
                 .orderDate(LocalDateTime.now())
                 .status(OrderStatus.PENDING)
+                .receiptAddress(receiptAddress)
+                .recipientName(recipientName)
+                .recipientSlack(recipientSlack)
                 .createdBy(userId)
                 .build();
     }
