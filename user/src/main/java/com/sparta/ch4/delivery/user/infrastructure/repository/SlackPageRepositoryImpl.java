@@ -27,8 +27,7 @@ public class SlackPageRepositoryImpl implements SlackPageRepository {
         List<SlackMessageDto> results = queryFactory
                 .select(Projections.constructor(
                         SlackMessageDto.class,
-                        slack.user.id.as("userId"),
-                        slack.slackId,
+                        slack.receiverSlackId,
                         slack.id.as("slackMessageId"),
                         slack.message,
                         slack.createdAt.as("receivedAt")
@@ -50,7 +49,6 @@ public class SlackPageRepositoryImpl implements SlackPageRepository {
         return new PageImpl<>(results, pageable, total);
     }
 
-    // 검색 조건 생성
     private BooleanExpression getSearchPredicate(SlackSearchType searchType, String searchValue) {
 
         if (searchType == null || searchValue == null) {
@@ -58,7 +56,7 @@ public class SlackPageRepositoryImpl implements SlackPageRepository {
         }
 
         return switch (searchType) {
-            case SLACK_ID -> slack.slackId.containsIgnoreCase(searchValue);
+            case SLACK_ID -> slack.receiverSlackId.eq(searchValue);
             case MESSAGE_CONTENT -> slack.message.containsIgnoreCase(searchValue);
         };
     }

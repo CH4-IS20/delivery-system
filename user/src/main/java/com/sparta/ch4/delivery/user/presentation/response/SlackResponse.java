@@ -7,16 +7,14 @@ import lombok.Builder;
 
 @Builder
 public record SlackResponse(
-        Long userId,
-        String userSlackId,
+        String receiverSlackId,
         UUID slackMessageId,
         String message,
         LocalDateTime receivedAt
 ) {
     public static SlackResponse fromSlackMessageDto(SlackMessageDto dto) {
         return SlackResponse.builder()
-                .userId(dto.userId())
-                .userSlackId(dto.userSlackId())
+                .receiverSlackId(dto.receiverSlackId())
                 .slackMessageId(dto.slackMessageId())
                 .message(dto.message())
                 .receivedAt(dto.receivedAt())
