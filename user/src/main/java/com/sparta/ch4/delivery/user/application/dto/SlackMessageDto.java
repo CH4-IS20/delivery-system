@@ -12,7 +12,7 @@ public record SlackMessageDto (
         String userSlackId,      // 사용자가 사용하는 슬랙 ID
         UUID slackMessageId, // 슬랙 고유 ID
         String message,    // 수신한 메시지 내용
-        LocalDateTime sentAt // 수신한 시간
+        LocalDateTime receivedAt // 수신한 시간
 )
 {
     public Slack toEntity(User user) {
@@ -31,7 +31,7 @@ public record SlackMessageDto (
                 .userId(entity.getUser().getId())
                 .message(entity.getMessage())
                 .userSlackId(entity.getSlackId())
-                .sentAt(entity.getCreatedAt())
+                .receivedAt(entity.getCreatedAt())
                 .build();
     }
 }

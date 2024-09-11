@@ -11,7 +11,7 @@ public record SlackResponse(
         String userSlackId,
         UUID slackMessageId,
         String message,
-        LocalDateTime sentAt
+        LocalDateTime receivedAt
 ) {
     public static SlackResponse fromSlackMessageDto(SlackMessageDto dto) {
         return SlackResponse.builder()
@@ -19,7 +19,7 @@ public record SlackResponse(
                 .userSlackId(dto.userSlackId())
                 .slackMessageId(dto.slackMessageId())
                 .message(dto.message())
-                .sentAt(dto.sentAt())
+                .receivedAt(dto.receivedAt())
                 .build();
     }
 }

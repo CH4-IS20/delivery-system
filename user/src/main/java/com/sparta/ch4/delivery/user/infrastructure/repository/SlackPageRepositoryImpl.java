@@ -31,7 +31,7 @@ public class SlackPageRepositoryImpl implements SlackPageRepository {
                         slack.slackId,
                         slack.id.as("slackMessageId"),
                         slack.message,
-                        slack.createdAt.as("sentAt")
+                        slack.createdAt.as("receivedAt")
                 ))
                 .from(slack)
                 .where(getSearchPredicate(searchType, searchValue))
