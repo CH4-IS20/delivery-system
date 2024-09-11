@@ -1,5 +1,6 @@
 package com.sparta.ch4.delivery.user.presentation.request;
 
+import com.sparta.ch4.delivery.user.application.dto.LoginDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -16,5 +17,11 @@ public record LoginRequest(
                 message = "비밀번호는 최소 한 개의 알파벳, 숫자, 특수 문자를 포함해야 합니다.")
         String password
 ) {
+        public LoginDto toDto() {
+                return LoginDto.builder()
+                        .username(username)
+                        .password(password)
+                        .build();
+        }
 }
 
