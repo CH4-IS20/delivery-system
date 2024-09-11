@@ -8,17 +8,22 @@ import com.sparta.ch4.delivery.order.domain.service.DeliveryDomainService;
 import com.sparta.ch4.delivery.order.domain.service.DeliveryHistoryDomainService;
 import com.sparta.ch4.delivery.order.domain.service.OrderDomainService;
 import com.sparta.ch4.delivery.order.domain.type.DeliveryStatus;
+import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
+import com.sparta.ch4.delivery.order.domain.type.ProductQuantity;
 import com.sparta.ch4.delivery.order.infrastructure.client.CompanyClient;
 import com.sparta.ch4.delivery.order.infrastructure.client.HubRouteClient;
 import com.sparta.ch4.delivery.order.infrastructure.client.ProductClient;
-import com.sparta.ch4.delivery.order.infrastructure.client.request.ProductUpdateRequest;
+import com.sparta.ch4.delivery.order.infrastructure.client.request.ProductQuantityUpdateRequest;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.CompanyResponse;
-import com.sparta.ch4.delivery.order.infrastructure.client.response.CompanyWithUserForOrderResponse;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.HubRouteForOrderResponse;
-import com.sparta.ch4.delivery.order.infrastructure.client.response.ProductResponse;
 import com.sparta.ch4.delivery.order.presentation.response.CommonResponse;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,54 +46,96 @@ public class OrderService {
     private final CompanyClient companyClient;
     private final HubRouteClient hubRouteClient;
 
-    //TODO : client API response 받을 시 data null 인지 확인하는 검증 필요
-    //TODO : 실패 처리 복구 로직 작성 필요
-    @Transactional
-    public OrderDto createOrder(OrderDto dto) {
-        //1. 상품 재고 확인 요청
-        CommonResponse<ProductResponse> productApiResponse = productClient.getProductById(dto.productId());
-        ProductResponse product = productApiResponse.getData();
-        if (product.quantity() < dto.quantity()) {
-            // TODO: 커스텀 에러 정의
-            throw new IllegalArgumentException("재고가 부족합니다.");
-        }
-        // 재고 감소 업데이트
-        // TODO: 재고 감소 & 복구 API 만들기
-        ProductUpdateRequest updateProductRequest = ProductUpdateRequest.fromApiResponseForQuantityUpdate(
-                product, product.quantity() - dto.quantity()
-        );
-        productClient.updateProduct(product.id(), updateProductRequest);
+    private final CircuitBreakerRegistry circuitBreakerRegistry;
 
-        // 2. 공급,수령 업체 ID를 바탕으로 허브 서비스에 [경로, 배송담당자, 예상시간,예상거리] 요청
-        CommonResponse<List<HubRouteForOrderResponse>> hubRouteResponse = hubRouteClient.getHubRouteForOrder(
-                dto.supplierId(),
-                dto.receiverId()
-        );
-        List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
-
-        // 3. 수령업체 정보를 통해 [최종 배송지 및 수령업체 유저 정보] 요청
-
-        CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(dto.receiverId());
-        if (companyResponse.getData() == null){
-            // TODO: 커스텀 에러 정의
-            throw new IllegalArgumentException("ID 에 해당하는 업체를 찾을 수 없습니다.");
-        };
-
-        //주문 관련 객체 프로세스 : 주문 생성 -> 배송 생성 -> 배송 기록 생성
-        //주문 생성
-        Order order = orderDomainService.create(dto.toEntity());
-
-        //배송 생성
-        Delivery delivery = deliveryDomainService.create(
-                buildDelivery(order, hubRoute, dto)
-        );
-        //배송 경로 기록 생성
-        List<DeliveryHistory> deliveryHistory = deliveryHistoryDomainService.create(
-                buildDeliveryHistory(delivery, hubRoute)
-        );
-
-        return OrderDto.from(order);
+    @PostConstruct
+    public void registerEventListener() {
+        circuitBreakerRegistry.circuitBreaker("orderService").getEventPublisher()
+                .onStateTransition(event -> log.info("#######CircuitBreaker State Transition: {}", event)) // 상태 전환 이벤트 리스너
+                .onFailureRateExceeded(event -> log.info("#######CircuitBreaker Failure Rate Exceeded: {}", event)) // 실패율 초과 이벤트 리스너
+                .onCallNotPermitted(event -> log.info("#######CircuitBreaker Call Not Permitted: {}", event)) // 호출 차단 이벤트 리스너
+                .onError(event -> log.info("#######CircuitBreaker Error: {}", event)); // 오류 발생 이벤트 리스너
     }
+
+    //TODO : client API response 받을 시 data null 인지 확인하는 검증 필요
+    @Transactional
+    @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackForDecreasedQuantity")
+    public OrderDto createOrder(OrderDto dto) {
+        try {
+            //1. 상품 재고 확인 요청 및 재고 업데이트
+            CallDecreaseProductQuantity(dto);
+
+            // 2. 공급,수령 업체 ID를 바탕으로 허브 서비스에 [경로, 배송담당자, 예상시간,예상거리] 요청
+            CommonResponse<List<HubRouteForOrderResponse>> hubRouteResponse = hubRouteClient.getHubRouteForOrder(
+                    dto.supplierId(),
+                    dto.receiverId()
+            );
+            List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
+
+            // 3. 수령업체 정보를 통해 [최종 배송지 및 수령업체 유저 정보] 요청
+
+            CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(dto.receiverId());
+            if (companyResponse.getData() == null) {
+                // TODO: 커스텀 에러 정의
+                throw new IllegalArgumentException("ID 에 해당하는 업체를 찾을 수 없습니다.");
+            }
+            ;
+
+            //주문 관련 객체 프로세스 : 주문 생성 -> 배송 생성 -> 배송 기록 생성
+            //주문 생성
+            Order order = orderDomainService.create(dto.toEntity());
+
+            //배송 생성
+            Delivery delivery = deliveryDomainService.create(
+                    buildDelivery(order, hubRoute, dto)
+            );
+            //배송 경로 기록 생성
+            List<DeliveryHistory> deliveryHistory = deliveryHistoryDomainService.create(
+                    buildDeliveryHistory(delivery, hubRoute)
+            );
+
+            return OrderDto.from(order);
+        }catch(RuntimeException e){
+            // fallback
+            log.error("주문 생성 실패: ", e);
+            throw e;
+        }
+
+    }
+
+
+    @Transactional
+    public Page<OrderDto> getAllOrders(OrderSearchType searchType, String searchValue, Pageable pageable) {
+        return orderDomainService.getAll(searchType, searchValue, pageable).map(OrderDto::from);
+    }
+
+    //TODO: 구현
+    @Transactional
+    public OrderDto updateOrder(UUID orderId, OrderDto dto) {
+        // 무엇을 업데이트 할 수 있나?
+        // ->  수량
+
+        return OrderDto.builder().build();
+    }
+
+
+    // 재고 감소 api
+    public void CallDecreaseProductQuantity(OrderDto dto) {
+        productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.DOWN));
+    }
+
+    // 재고 복구 api 호출
+    public OrderDto fallbackForDecreasedQuantity(OrderDto dto, Throwable throwable) {
+        log.error("주문 생성 실패로 인해 fallback 호출됨: ", throwable);
+        // 보상 로직: 수량 증가
+        try {
+            productClient.updateQuantity(dto.productId(),ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.UP));
+        } catch (Exception ex) {
+            log.error("상품 수량 증가 실패: ", ex);
+        }
+        return  dto;
+    }
+
 
 
     // 배송 객체 생성
@@ -117,7 +164,7 @@ public class OrderService {
     ) {
         List<DeliveryHistory> deliveryHistoryList = new ArrayList<>();
         AtomicInteger sequenceCounter = new AtomicInteger(1);  // 시퀀스 시작 값을 1로 설정
-        hubRoutes.forEach(hubRoute ->  {
+        hubRoutes.forEach(hubRoute -> {
             var history = DeliveryHistory.builder()
                     .delivery(delivery)
                     .deliveryManagerId(hubRoute.deliveryManagerId())

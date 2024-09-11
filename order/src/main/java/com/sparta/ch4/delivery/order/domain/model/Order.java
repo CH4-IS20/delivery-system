@@ -48,6 +48,7 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;	 // 	주문 상태 (pending, completed, canceled)
 
+    @Setter
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Delivery delivery;
 
