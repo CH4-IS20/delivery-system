@@ -13,6 +13,7 @@ public record UserResponse(
         Long id,
         UUID hubId,
         UUID companyId,
+        String slackId,
         String username,
         String email,
         UserRole role,
@@ -23,6 +24,7 @@ public record UserResponse(
                 .id(entity.getId())
                 .hubId(entity.getHubId())
                 .companyId(entity.getCompanyId())
+                .slackId(entity.getSlackId())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .role(entity.getRole())
@@ -35,6 +37,7 @@ public record UserResponse(
                 .id(dto.id())
                 .hubId(dto.hubId())
                 .companyId(dto.companyId())
+                .slackId(dto.slackId())
                 .username(dto.username())
                 .email(dto.email())
                 .role(dto.role())
@@ -47,6 +50,7 @@ public record UserResponse(
                 .id(dto.id())
                 .hubId(dto.hubId())
                 .companyId(dto.companyId())
+                .slackId(dto.slackId())
                 .username(dto.username())
                 .email(dto.email())
                 .role(dto.role())

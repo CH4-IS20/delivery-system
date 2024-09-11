@@ -10,6 +10,7 @@ public record UserPageDto(
         UUID companyId,
         String username,
         String email,
+        String slackId,
         UserRole role,
         LocalDateTime createdAt
 ) {

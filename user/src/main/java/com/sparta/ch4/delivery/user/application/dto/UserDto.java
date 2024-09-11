@@ -11,6 +11,7 @@ public record UserDto(
         Long id,
         UUID hubId,
         UUID companyId,
+        String slackId,
         String username,
         String email,
         String password,
@@ -29,6 +30,7 @@ public record UserDto(
                 .id(entity.getId())
                 .hubId(entity.getHubId())
                 .companyId(entity.getCompanyId())
+                .slackId(entity.getSlackId())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .role(entity.getRole())

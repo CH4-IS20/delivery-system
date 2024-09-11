@@ -30,9 +30,10 @@ public class UserPageRepositoryImpl implements UserPageRepository {
         List<UserPageDto> results = queryFactory
                 .select(Projections.constructor(
                         UserPageDto.class,
-                        user.id.as("id"),
-                        user.hubId.as("hubId"),
-                        user.companyId.as("companyId"),
+                        user.id,
+                        user.hubId,
+                        user.companyId,
+                        user.slackId,
                         user.username,
                         user.email,
                         user.role,
