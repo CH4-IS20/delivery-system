@@ -37,6 +37,9 @@ public class User extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "slack_id", nullable = false)
+    private String slackId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRole role;
@@ -61,6 +64,7 @@ public class User extends BaseEntity {
         this.password = password;
         this.hubId = dto.hubId();
         this.companyId = dto.companyId();
+        this.slackId = dto.slackId();
         this.setUpdatedBy(dto.updatedBy());
     }
 

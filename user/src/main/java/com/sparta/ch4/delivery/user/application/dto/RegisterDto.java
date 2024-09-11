@@ -9,6 +9,7 @@ import lombok.Builder;
 public record RegisterDto(
         UUID hubId,
         UUID companyId,
+        String slackId,
         String username,
         String email,
         String password,
@@ -20,6 +21,7 @@ public record RegisterDto(
         return User.builder()
                 .hubId(hubId)
                 .companyId(companyId)
+                .slackId(slackId)
                 .username(username)
                 .email(email)
                 .password(encodedPassword)
