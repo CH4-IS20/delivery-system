@@ -28,6 +28,9 @@ public record UserUpdateRequest(
         @NotNull(message = "역할은 필수입니다.")
         UserRole role,
 
+        @NotBlank(message = "Slack 아이디는 필수입니다.")
+        String slackId,
+
         UUID hubId,
 
         UUID companyId
@@ -40,6 +43,7 @@ public record UserUpdateRequest(
                 .role(role)
                 .hubId(hubId)
                 .companyId(companyId)
+                .slackId(slackId)
                 .updatedBy(updatedBy)
                 .build();
     }

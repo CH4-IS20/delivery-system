@@ -28,6 +28,9 @@ public record RegisterRequest(
         @NotNull(message = "역할은 필수입니다.")
         UserRole role,
 
+        @NotBlank(message = "Slack 아이디는 필수입니다.")
+        String slackId,
+
         UUID hubId,
 
         UUID companyId
@@ -36,6 +39,7 @@ public record RegisterRequest(
                 return RegisterDto.builder()
                         .hubId(hubId)
                         .companyId(companyId)
+                        .slackId(slackId)
                         .username(username)
                         .password(password)
                         .email(email)
