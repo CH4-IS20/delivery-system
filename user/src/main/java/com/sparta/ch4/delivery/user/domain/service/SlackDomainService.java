@@ -2,7 +2,6 @@ package com.sparta.ch4.delivery.user.domain.service;
 
 import com.sparta.ch4.delivery.user.application.dto.SlackMessageDto;
 import com.sparta.ch4.delivery.user.application.dto.SlackSendMessageDto;
-import com.sparta.ch4.delivery.user.domain.model.Slack;
 import com.sparta.ch4.delivery.user.domain.repository.SlackPageRepository;
 import com.sparta.ch4.delivery.user.domain.repository.SlackRepository;
 import com.sparta.ch4.delivery.user.domain.type.SlackSearchType;
