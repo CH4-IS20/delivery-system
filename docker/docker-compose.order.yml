@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   order-db:
     image: postgres:16.4
@@ -11,12 +12,12 @@ services:
     volumes:
       - postgres-data:${ORDER_SERVER_DB_VOLUMES}
     networks:
-      - delivery-msa-net
+      - internal-network
 
   order-app:
     container_name: order-app
     build:
-      context: .
+      context: ../order
       dockerfile: Dockerfile
     depends_on:
       - order-db
@@ -24,7 +25,7 @@ services:
     ports:
       - "${ORDER_SERVER_PORT}:${ORDER_SERVER_PORT}"
     networks:
-      - delivery-msa-net
+      - internal-network
     environment:
       SPRING_DATASOURCE_URL: ${ORDER_SERVER_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${ORDER_SERVER_DB_USERNAME}
@@ -34,8 +35,7 @@ services:
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
 
 networks:
-  delivery-msa-net:
+  internal-network:
     external: true
-
 volumes:
   postgres-data:

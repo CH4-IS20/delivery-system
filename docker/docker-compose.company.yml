@@ -16,7 +16,7 @@ services:
   company-app:
     container_name: company-app
     build:
-      context: .
+      context: ../company
       dockerfile: Dockerfile
     depends_on:
       - company-db

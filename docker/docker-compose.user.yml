@@ -11,12 +11,12 @@ services:
     volumes:
       - postgres-data:${USER_SERVER_DB_VOLUMES}
     networks:
-      - delivery-msa-net
+      - internal-network
 
   user-app:
     container_name: user-app
     build:
-      context: .
+      context: ../user
       dockerfile: Dockerfile
     depends_on:
       - user-db
@@ -24,7 +24,7 @@ services:
     ports:
       - "${USER_SERVER_PORT}:${USER_SERVER_PORT}"
     networks:
-      - delivery-msa-net
+      - internal-network
     environment:
       SPRING_DATASOURCE_URL: ${USER_SERVER_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${USER_SERVER_DB_USERNAME}
@@ -37,7 +37,7 @@ services:
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
 
 networks:
-  delivery-msa-net:
+  internal-network:
     external: true
 
 volumes:
