@@ -56,6 +56,7 @@ public record OrderDto(
                 .quantity(entity.getQuantity())
                 .orderDate(entity.getOrderDate())
                 .status(entity.getStatus())
+                .isDeleted(entity.getIsDeleted())
                 .deliveryId(entity.getDelivery().getId())
                 .deliveryStatus(entity.getDelivery().getStatus())
                 .receiptAddress(entity.getDelivery().getDeliveryAddress())
