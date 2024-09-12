@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: gateway
+  config:
+    activate:
+      on-profile: local
+  cloud:
+    gateway:
+      routes:
+        - id: user
+          uri: http://${USER_SERVER_HOST}:${USER_SERVER_PORT}
+          predicates:
+            - Path=/api/users/**
+            - Path=/api/auth/**
+
+        - id: company
+          uri: http://${COMPANY_SERVER_HOST}:${COMPANY_SERVER_PORT}
+          predicates:
+            - Path=/api/companies/**
+            - Path=/api/products/**
+
+        - id: hub
+          uri: http://${HUB_SERVER_HOST}:${HUB_SERVER_HOST}
+          predicates:
+            - Path=/api/hubs/**
+            - Path=/api/hub-routes/**
+            - Path=/api/delivery-managers/**
+
+        - id: delivery
+          uri: http://${DELIVERY_SERVER_HOST}:${DELIVERY_SERVER_HOST}
+          predicates:
+            - Path=/api/deliveries/**
+            - Path=/api/orders/**
+            - Path=/api/delivery-histories/**
+
+server:
+  port: ${GATEWAY_SERVER_PORT}
+
+eureka:
+  instance:
+    hostname: ${GATEWAY_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: "${EUREKA_SERVER_URL}"
+    register-with-eureka: true
+    fetch-registry: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  expiration-time: ${JWT_EXPIRATION_TIME}

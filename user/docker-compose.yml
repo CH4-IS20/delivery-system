@@ -34,6 +34,7 @@ services:
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
 
 networks:
   delivery-msa-net:
