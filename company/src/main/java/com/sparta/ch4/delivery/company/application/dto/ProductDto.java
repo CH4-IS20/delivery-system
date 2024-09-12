@@ -53,7 +53,6 @@ public record ProductDto(
 
     public Product toEntity(Company company) {
         Product product =  Product.builder()
-                .id(id)
                 .company(company)
                 .hubId(hubId)
                 .name(name)

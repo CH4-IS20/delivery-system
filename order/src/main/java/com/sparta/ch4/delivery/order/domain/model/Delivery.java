@@ -14,35 +14,42 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "p_delivery")
-public class Delivery {
+public class Delivery extends BaseEntity {
 
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
     private UUID id;
 
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private DeliveryStatus status;
 
+    @Setter
     @Column(name = "start_hub", nullable = false)
     private UUID startHub;
 
+    @Setter
     @Column(name = "end_hub", nullable = false)
     private UUID endHub;
 
+    @Setter
     @Column(name = "delivery_address", length = 100, nullable = false)
     private String deliveryAddress;
 
+    @Setter
     @Column(name = "recipient", length = 100, nullable = false)
-    private String recipient;  // 수령인
+    private String recipient;  // 수령인 username
 
+    @Setter
     @Column(name = "recipient_slack", nullable = false)
-    private UUID recipientSlack;
+    private String recipientSlack; // 수령인 슬랙 id (slack DB PK 가 아님)
 
     @Override
     public boolean equals(Object o) {

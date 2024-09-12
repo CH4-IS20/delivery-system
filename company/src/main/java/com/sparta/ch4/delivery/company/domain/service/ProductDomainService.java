@@ -5,6 +5,7 @@ import com.sparta.ch4.delivery.company.domain.model.Company;
 import com.sparta.ch4.delivery.company.domain.model.Product;
 import com.sparta.ch4.delivery.company.domain.repository.CompanyRepository;
 import com.sparta.ch4.delivery.company.domain.repository.ProductRepository;
+import com.sparta.ch4.delivery.company.domain.type.ProductQuantity;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,26 +24,26 @@ public class ProductDomainService {
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
 
-    public ProductDto createProduct(ProductDto productDto) {
+    public Product createProduct(ProductDto productDto) {
         Company company = companyRepository.findById(productDto.companyId()).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 업체를 찾을 수 없습니다.")
         );
 
-        return ProductDto.from(productRepository.save(productDto.toEntity(company)));
+        return productRepository.save(productDto.toEntity(company));
     }
 
 
-    public ProductDto getProductById(UUID productId) {
-        return productRepository.findById(productId).map(ProductDto::from).orElseThrow(
+    public Product getProductById(UUID productId) {
+        return productRepository.findById(productId).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 상품을 찾을 수 없습니다.")
         );
     }
 
-    public Page<ProductDto> getAllProducts(UUID companyId, UUID hubId, ProductSearchType searchType, String searchValue, Pageable pageable) {
-        return productRepository.searchProducts(companyId, hubId, searchType, searchValue, pageable).map(ProductDto::from);
+    public Page<Product> getAllProducts(UUID companyId, UUID hubId, ProductSearchType searchType, String searchValue, Pageable pageable) {
+        return productRepository.searchProducts(companyId, hubId, searchType, searchValue, pageable);
     }
 
-    public ProductDto updateProduct(UUID productId, ProductDto productDto) {
+    public Product updateProduct(UUID productId, ProductDto productDto) {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 상품을 찾을 수 없습니다.")
         );
@@ -60,7 +61,7 @@ public class ProductDomainService {
         product.setQuantity(productDto.quantity());
         product.setHubId(productDto.hubId());
 
-        return ProductDto.from(productRepository.save(product));
+        return productRepository.save(product);
     }
 
     public void deleteProduct(UUID productId, String userId) {
@@ -71,5 +72,19 @@ public class ProductDomainService {
         product.setDeletedAt(LocalDateTime.now());
         product.setDeletedBy(userId);
         product.setIsDeleted(true);
+    }
+
+    public void updateProductQuantity(UUID productId, Integer quantity, ProductQuantity upAndDown) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new EntityNotFoundException("ID 에 해당하는 상품을 찾을 수 없습니다.")
+        );
+        switch(upAndDown){
+            case UP -> product.setQuantity(product.getQuantity() + quantity);
+            case DOWN -> {
+                // TODO : 커스텀 에러 정의
+                if (product.getQuantity() < quantity) throw new IllegalArgumentException("재고가 부족합니다.");
+                product.setQuantity(product.getQuantity() - quantity);
+            }
+        }
     }
 }

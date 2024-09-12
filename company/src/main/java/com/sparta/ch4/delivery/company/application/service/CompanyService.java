@@ -3,6 +3,7 @@ package com.sparta.ch4.delivery.company.application.service;
 import com.sparta.ch4.delivery.company.application.dto.CompanyDto;
 import com.sparta.ch4.delivery.company.domain.service.CompanyDomainService;
 import com.sparta.ch4.delivery.company.domain.type.CompanySearchType;
+import com.sparta.ch4.delivery.company.infrastructure.client.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,9 @@ import java.util.UUID;
 public class CompanyService {
 
     private final CompanyDomainService companyDomainService;
+
+    private final UserClient userClient;
+
 
     //TODO : Hub 조회 및 검증 로직 작성
     @Transactional
@@ -43,4 +47,5 @@ public class CompanyService {
     public void deleteCompany(UUID companyId, String userId) {
         companyDomainService.deleteCompany(companyId, userId);
     }
+
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "p_delivery_history")
-public class DeliveryHistory {
+public class DeliveryHistory extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
