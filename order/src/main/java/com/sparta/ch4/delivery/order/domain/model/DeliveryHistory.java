@@ -38,12 +38,15 @@ public class DeliveryHistory extends BaseEntity {
     @Column(name = "estimated_duration", nullable = false)
     private Integer estimatedDuration;   //예상 소요 시간
 
+    @Setter
     @Column(name = "actual_distance")
     private Float actualDistance;
 
+    @Setter
     @Column(name = "actual_duration")
     private Integer actualDuration;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private DeliveryStatus status;
