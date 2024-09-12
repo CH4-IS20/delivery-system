@@ -4,7 +4,6 @@ package com.sparta.ch4.delivery.order.application.service;
 import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
 import com.sparta.ch4.delivery.order.application.dto.DeliveryStatusUpdateDto;
 import com.sparta.ch4.delivery.order.domain.service.DeliveryDomainService;
-import com.sparta.ch4.delivery.order.domain.service.OrderDomainService;
 import com.sparta.ch4.delivery.order.domain.type.DeliverySearchType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -17,6 +17,7 @@ public record OrderResponse(
         Integer quantity, // 주문 상품 수량
         LocalDateTime orderDate,  // 주문 일자 및 시간
         OrderStatus status,  // 주문 상태
+        DeliveryResponse delivery,
         Boolean isDeleted
 ) {
 
@@ -30,6 +31,7 @@ public record OrderResponse(
                 .quantity(dto.quantity())
                 .orderDate(dto.orderDate())
                 .status(dto.status())
+                .delivery(DeliveryResponse.from(dto.deliveryDto()))
                 .isDeleted(dto.isDeleted())
                 .build();
     }

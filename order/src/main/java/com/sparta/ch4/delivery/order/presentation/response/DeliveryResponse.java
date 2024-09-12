@@ -11,7 +11,6 @@ import java.util.UUID;
 public record DeliveryResponse(
         UUID id, // 배송 ID
         DeliveryStatus status, // 배송 상태
-        UUID orderId,    // orderId
         UUID startHub,      // 배송 시작 허브
         UUID endHub,        // 배송 목적지 허브
         String deliveryAddress,     // 배송지(수령업체주소)
@@ -25,7 +24,6 @@ public record DeliveryResponse(
         return DeliveryResponse.builder()
                 .id(dto.id())
                 .status(dto.status())
-                .orderId(dto.orderId())
                 .startHub(dto.startHub())
                 .endHub(dto.endHub())
                 .deliveryAddress(dto.deliveryAddress())

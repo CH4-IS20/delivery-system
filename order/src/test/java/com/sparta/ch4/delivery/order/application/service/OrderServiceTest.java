@@ -1,5 +1,7 @@
 package com.sparta.ch4.delivery.order.application.service;
 
+import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
+import com.sparta.ch4.delivery.order.application.dto.OrderCreateDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
@@ -18,14 +20,11 @@ import com.sparta.ch4.delivery.order.infrastructure.client.request.ProductQuanti
 import com.sparta.ch4.delivery.order.infrastructure.client.response.CompanyResponse;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.HubRouteForOrderResponse;
 import com.sparta.ch4.delivery.order.presentation.response.CommonResponse;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +36,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -69,14 +68,18 @@ class OrderServiceTest {
     private HubRouteClient hubRouteClient;
 
     private OrderDto orderDto;
+    private OrderCreateDto orderCreateDto;
     private Order order;
     private Delivery delivery;
+    private DeliveryDto deliveryDto;
     private DeliveryHistory deliveryHistory;
     private UUID orderId;
     private UUID productId;
     private UUID companyId;
     private UUID supplierId;
     private UUID deliveryId;
+    private UUID startHubId;
+    private UUID endHubId;
     private Pageable pageable;
 
     @BeforeEach
@@ -86,19 +89,28 @@ class OrderServiceTest {
         companyId = UUID.randomUUID();
         supplierId = UUID.randomUUID();
         deliveryId = UUID.randomUUID();
+        startHubId = UUID.randomUUID();
+        endHubId = UUID.randomUUID();
         pageable = Pageable.ofSize(10);
 
+        deliveryDto = DeliveryDto.builder().id(deliveryId).status(DeliveryStatus.HUB_WAITING)
+                .startHub(startHubId).endHub(endHubId).deliveryAddress("123 Test St")
+                .recipient("John Doe").recipientSlack("john.doe.slack").isDeleted(false).build();
+
+        orderCreateDto = OrderCreateDto.builder().userId(1L).supplierId(supplierId).receiverId(companyId)
+                .productId(productId).quantity(10).status(OrderStatus.PENDING).build();
+
         orderDto = OrderDto.builder().id(orderId).userId(1L).supplierId(supplierId).receiverId(companyId)
-                .productId(productId).deliveryId(deliveryId).quantity(10)
-                .status(OrderStatus.PENDING).deliveryStatus(DeliveryStatus.HUB_WAITING).receiptAddress("123 Test St")
-                .recipientName("John Doe").recipientSlack("john.doe.slack").build();
+                .productId(productId).deliveryDto(deliveryDto).quantity(10)
+                .status(OrderStatus.PENDING).isDeleted(false).build();
 
         order = Order.builder().id(orderId).userId(1L).supplierId(supplierId).receiverId(companyId).productId(productId)
                 .quantity(10).status(OrderStatus.PENDING).build();
 
         delivery = Delivery.builder().id(deliveryId).order(order).status(DeliveryStatus.HUB_WAITING)
-                .startHub(UUID.randomUUID()).endHub(UUID.randomUUID()).deliveryAddress("123 Test St")
+                .startHub(startHubId).endHub(endHubId).deliveryAddress("123 Test St")
                 .recipient("John Doe").recipientSlack("john.doe.slack").build();
+
         order.setDelivery(delivery);
         deliveryHistory = DeliveryHistory.builder().id(UUID.randomUUID()).delivery(delivery)
                 .deliveryManagerId(UUID.randomUUID()).hubRouteId(UUID.randomUUID()).sequence(1)
@@ -127,7 +139,7 @@ class OrderServiceTest {
         when(deliveryHistoryDomainService.create(anyList())).thenReturn(List.of(deliveryHistory));
         doNothing().when(productClient).updateQuantity(any(UUID.class), any(ProductQuantityUpdateRequest.class));
         //When  서비스 메소드 수행
-        OrderDto result = orderService.createOrder(orderDto);
+        OrderDto result = orderService.createOrder(orderCreateDto);
         //Then  Assert
         assertNotNull(result);
         assertEquals(orderDto, result);
