@@ -1,5 +1,6 @@
 package com.sparta.ch4.delivery.order.presentation.request;
 
+import com.sparta.ch4.delivery.order.application.dto.OrderCreateDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
 import com.sparta.ch4.delivery.order.domain.type.OrderStatus;
 import jakarta.validation.constraints.Min;
@@ -34,8 +35,8 @@ public record OrderCreateRequest(
 ) {
 
 
-    public OrderDto toDto(String userId) {
-        return OrderDto.builder()
+    public OrderCreateDto toDto(String userId) {
+        return OrderCreateDto.builder()
                 .userId(Long.parseLong(userId))
                 .supplierId(supplierId)
                 .receiverId(receiverId)
@@ -43,10 +44,10 @@ public record OrderCreateRequest(
                 .quantity(quantity)
                 .orderDate(LocalDateTime.now())
                 .status(OrderStatus.PENDING)
+                .createdBy(userId)
                 .receiptAddress(receiptAddress)
                 .recipientName(recipientName)
                 .recipientSlack(recipientSlack)
-                .createdBy(userId)
                 .build();
     }
 }

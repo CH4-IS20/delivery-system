@@ -1,5 +1,7 @@
 package com.sparta.ch4.delivery.order.application.service;
 
+import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
+import com.sparta.ch4.delivery.order.application.dto.OrderCreateDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
@@ -45,21 +47,21 @@ public class OrderService {
 
 
     @Transactional
-    public OrderDto createOrder(OrderDto dto) {
+    public OrderDto createOrder(OrderCreateDto orderCreatDto) {
         try {
             //1. 상품 재고 확인 요청 및 재고 업데이트
-            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.DOWN));
+            productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.DOWN));
 
             // 2. 공급,수령 업체 ID를 바탕으로 허브 서비스에 [경로, 배송담당자, 예상시간,예상거리] 요청
             CommonResponse<List<HubRouteForOrderResponse>> hubRouteResponse = hubRouteClient.getHubRouteForOrder(
-                    dto.supplierId(),
-                    dto.receiverId()
+                    orderCreatDto.supplierId(),
+                    orderCreatDto.receiverId()
             );
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
 
             // 3. 수령업체 정보를 통해 [최종 배송지 및 수령업체 유저 정보] 요청
 
-            CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(dto.receiverId());
+            CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(orderCreatDto.receiverId());
             if (companyResponse.getData() == null) {
                 // TODO: 커스텀 에러 정의
                 throw new IllegalArgumentException("ID 에 해당하는 업체를 찾을 수 없습니다.");
@@ -67,21 +69,22 @@ public class OrderService {
 
             //주문 관련 객체 프로세스 : 주문 생성 -> 배송 생성 -> 배송 기록 생성
             //주문 생성
-            Order order = orderDomainService.create(dto.toEntity());
+            Order order = orderDomainService.create(orderCreatDto.toEntity());
 
             //배송 생성
+            DeliveryDto deliveryDto = buildDeliveryDto(hubRoute, orderCreatDto);
             Delivery delivery = deliveryDomainService.create(
-                    buildDelivery(order, hubRoute, dto)
+                    deliveryDto.toEntity(order, orderCreatDto.createdBy())
             );
             //배송 경로 기록 생성
-            List<DeliveryHistory> deliveryHistory = deliveryHistoryDomainService.create(
+            deliveryHistoryDomainService.create(
                     buildDeliveryHistory(delivery, hubRoute)
             );
 
             return OrderDto.from(order);
         } catch (RuntimeException e) {
             // 감소된 재고 복구 api call
-            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.UP));
+            productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
             log.error("주문 생성 실패: ", e);
             throw e;
         }
@@ -128,27 +131,24 @@ public class OrderService {
 
 
 
-    // 배송 객체 생성
-    private Delivery buildDelivery(
-            Order order, List<HubRouteForOrderResponse> hubRoutes, OrderDto orderDto
+    // 배송 Dto 객체 생성
+    private DeliveryDto buildDeliveryDto(
+            List<HubRouteForOrderResponse> hubRoutes, OrderCreateDto orderCreateDto
     ) {
         UUID startHubId = hubRoutes.get(0).startHubId();
         UUID endHubId = hubRoutes.get(hubRoutes.size() - 1).destHubId();
 
-        Delivery delivery = Delivery.builder()
-                .order(order)
-                .deliveryAddress(orderDto.receiptAddress())
-                .startHub(startHubId)    //시작 허브
-                .endHub(endHubId)    // 최종목적지허브
+        return DeliveryDto.builder()
+                .deliveryAddress(orderCreateDto.receiptAddress())
+                .startHub(startHubId)
+                .endHub(endHubId)
                 .status(DeliveryStatus.HUB_WAITING)
-                .recipient(orderDto.recipientName())
-                .recipientSlack(orderDto.recipientSlack())
+                .recipient(orderCreateDto.recipientName())
+                .recipientSlack(orderCreateDto.recipientSlack())
                 .build();
-        delivery.setCreatedBy(orderDto.createdBy());
-        return delivery;
     }
 
-    //배송 기록 객체 생성
+    //배송 기록 엔티티 객체 생성
     private List<DeliveryHistory> buildDeliveryHistory(
             Delivery delivery, List<HubRouteForOrderResponse> hubRoutes
     ) {
