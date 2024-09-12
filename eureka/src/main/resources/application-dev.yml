@@ -3,11 +3,11 @@ spring:
     name: eureka
 
 server:
-  port: ${EUREKA_PORT}
+  port: ${EUREKA_SERVER_PORT}
 
 eureka:
   instance:
-    hostname: ${EUREKA_HOST}
+    hostname: ${EUREKA_SERVER_HOST}
   client:
     registerWithEureka: false
     fetchRegistry: false
