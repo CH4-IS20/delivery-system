@@ -6,7 +6,6 @@ import com.sparta.ch4.delivery.order.domain.type.DeliverySearchType;
 import com.sparta.ch4.delivery.order.presentation.request.DeliveryStatusUpdateRequest;
 import com.sparta.ch4.delivery.order.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.order.presentation.response.DeliveryResponse;
-import com.sparta.ch4.delivery.order.presentation.response.DeliveryWithOrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,10 +39,10 @@ public class DeliveryController {
         );
     }
     @GetMapping("/{deliveryId}")
-    public CommonResponse<DeliveryWithOrderResponse> getDelivery(
+    public CommonResponse<DeliveryResponse> getDelivery(
             @PathVariable(name = "deliveryId") UUID deliveryId
     ){
-        return CommonResponse.success(DeliveryWithOrderResponse.from(deliveryService.getDelivery(deliveryId)));
+        return CommonResponse.success(DeliveryResponse.from(deliveryService.getDelivery(deliveryId)));
     }
 
     @PutMapping("/{deliveryId}/status")
