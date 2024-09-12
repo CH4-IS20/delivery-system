@@ -10,28 +10,22 @@ spring:
         - id: user
           uri: http://${USER_SERVER_HOST}:${USER_SERVER_PORT}
           predicates:
-            - Path=/api/users/**
-            - Path=/api/auth/**
+            - Path=/api/users/**, /api/auth/**
 
         - id: company
           uri: http://${COMPANY_SERVER_HOST}:${COMPANY_SERVER_PORT}
           predicates:
-            - Path=/api/companies/**
-            - Path=/api/products/**
+            - Path=/api/companies/**, /api/products/**
 
         - id: hub
           uri: http://${HUB_SERVER_HOST}:${HUB_SERVER_HOST}
           predicates:
-            - Path=/api/hubs/**
-            - Path=/api/hub-routes/**
-            - Path=/api/delivery-managers/**
+            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**
 
         - id: delivery
           uri: http://${DELIVERY_SERVER_HOST}:${DELIVERY_SERVER_HOST}
           predicates:
-            - Path=/api/deliveries/**
-            - Path=/api/orders/**
-            - Path=/api/delivery-histories/**
+            - Path=/api/deliveries/**, /api/orders/**, /api/delivery-histories/**
 
 server:
   port: ${GATEWAY_SERVER_PORT}
