@@ -18,8 +18,8 @@ scrape_configs:
           - 'order-app:19094'    # Order app container
           - 'user-app:19091'     # User app container
           - 'hub-app:19093'      # Hub app container
-          - 'company-app:19092'      # Hub app container
-          - 'eureka-app:19090'      # Hub app container
+          - 'company-app:19092'      # Company app container
+          - 'eureka-app:19090'      # Eureka app container
 
   - job_name: 'monitor-services'
     static_configs:
