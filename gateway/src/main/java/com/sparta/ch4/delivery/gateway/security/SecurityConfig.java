@@ -127,6 +127,7 @@ public class SecurityConfig {
                         .hasRole("MASTER") // 허브이동관리 수정
                         .pathMatchers(HttpMethod.DELETE, "/api/hub-routes/{hubRouteId}")
                         .hasRole("MASTER") // 허브이동관리 삭제
+                        .anyExchange().authenticated()
                 );
         return http.build();
     }
