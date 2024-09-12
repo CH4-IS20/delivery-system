@@ -8,11 +8,11 @@ services:
     ports:
       - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
     networks:
-      - delivery-msa-net
+      - service-network
     environment:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
       EUREKA_SERVER_HOST: ${EUREKA_SERVER_HOST}
 
 networks:
-  delivery-msa-net:
+  service-network:
     external: true

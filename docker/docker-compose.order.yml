@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres-data:${ORDER_SERVER_DB_VOLUMES}
     networks:
-      - internal-network
+      - service-network
 
   order-app:
     container_name: order-app
@@ -25,7 +25,7 @@ services:
     ports:
       - "${ORDER_SERVER_PORT}:${ORDER_SERVER_PORT}"
     networks:
-      - internal-network
+      - service-network
     environment:
       SPRING_DATASOURCE_URL: ${ORDER_SERVER_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${ORDER_SERVER_DB_USERNAME}
@@ -35,7 +35,7 @@ services:
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
 
 networks:
-  internal-network:
+  service-network:
     external: true
 volumes:
   postgres-data:

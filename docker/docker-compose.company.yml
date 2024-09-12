@@ -1,6 +1,6 @@
 services:
   company-db:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: company-db
     environment:
       POSTGRES_USER: ${COMPANY_SERVER_DB_USERNAME}
@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres-data:${COMPANY_SERVER_DB_VOLUMES}
     networks:
-      - delivery-msa-net
+      - service-network
 
   company-app:
     container_name: company-app
@@ -24,7 +24,7 @@ services:
     ports:
       - "${COMPANY_SERVER_PORT}:${COMPANY_SERVER_PORT}"
     networks:
-      - delivery-msa-net
+      - service-network
     environment:
       SPRING_DATASOURCE_URL: ${COMPANY_SERVER_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${COMPANY_SERVER_DB_USERNAME}
@@ -34,7 +34,7 @@ services:
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
 
 networks:
-  delivery-msa-net:
+  service-network:
     external: true
 
 volumes:

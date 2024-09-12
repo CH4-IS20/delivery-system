@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres-data:${USER_SERVER_DB_VOLUMES}
     networks:
-      - internal-network
+      - service-network
 
   user-app:
     container_name: user-app
@@ -24,7 +24,7 @@ services:
     ports:
       - "${USER_SERVER_PORT}:${USER_SERVER_PORT}"
     networks:
-      - internal-network
+      - service-network
     environment:
       SPRING_DATASOURCE_URL: ${USER_SERVER_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${USER_SERVER_DB_USERNAME}
@@ -37,7 +37,7 @@ services:
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
 
 networks:
-  internal-network:
+  service-network:
     external: true
 
 volumes:

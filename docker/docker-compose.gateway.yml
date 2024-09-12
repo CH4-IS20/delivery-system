@@ -9,8 +9,8 @@ services:
     ports:
       - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"
     networks:
-      - client-network
-      - app-network
+      - gateway-network
+      - service-network
       - monitoring-network
     environment:
       GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
@@ -34,7 +34,7 @@ services:
 networks:
   gateway-network:
     external: true
-  app-network:
+  service-network:
     external: true
   monitoring-network:
     external: true
