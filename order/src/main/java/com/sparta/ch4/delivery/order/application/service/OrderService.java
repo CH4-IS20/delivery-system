@@ -17,9 +17,6 @@ import com.sparta.ch4.delivery.order.infrastructure.client.request.ProductQuanti
 import com.sparta.ch4.delivery.order.infrastructure.client.response.CompanyResponse;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.HubRouteForOrderResponse;
 import com.sparta.ch4.delivery.order.presentation.response.CommonResponse;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -46,19 +43,8 @@ public class OrderService {
     private final CompanyClient companyClient;
     private final HubRouteClient hubRouteClient;
 
-    private final CircuitBreakerRegistry circuitBreakerRegistry;
-
-    @PostConstruct
-    public void registerEventListener() {
-        circuitBreakerRegistry.circuitBreaker("orderService").getEventPublisher()
-                .onStateTransition(event -> log.info("#######CircuitBreaker State Transition: {}", event)) // 상태 전환 이벤트 리스너
-                .onFailureRateExceeded(event -> log.info("#######CircuitBreaker Failure Rate Exceeded: {}", event)) // 실패율 초과 이벤트 리스너
-                .onCallNotPermitted(event -> log.info("#######CircuitBreaker Call Not Permitted: {}", event)) // 호출 차단 이벤트 리스너
-                .onError(event -> log.info("#######CircuitBreaker Error: {}", event)); // 오류 발생 이벤트 리스너
-    }
 
     @Transactional
-    @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackForDecreasedQuantity")
     public OrderDto createOrder(OrderDto dto) {
         try {
             //1. 상품 재고 확인 요청 및 재고 업데이트
@@ -78,7 +64,6 @@ public class OrderService {
                 // TODO: 커스텀 에러 정의
                 throw new IllegalArgumentException("ID 에 해당하는 업체를 찾을 수 없습니다.");
             }
-            ;
 
             //주문 관련 객체 프로세스 : 주문 생성 -> 배송 생성 -> 배송 기록 생성
             //주문 생성
@@ -94,8 +79,9 @@ public class OrderService {
             );
 
             return OrderDto.from(order);
-        }catch(RuntimeException e){
-            // fallback
+        } catch (RuntimeException e) {
+            // 감소된 재고 복구 api call
+            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.UP));
             log.error("주문 생성 실패: ", e);
             throw e;
         }
@@ -119,15 +105,15 @@ public class OrderService {
         // ->  일단 수량만...  / quantity만 업데이트 하는 메소드로 분리할 수 있겠다.
         // 1. order 조회
         Order order = orderDomainService.getOrderById(orderId);
-        if (!order.getProductId().equals(dto.productId())){
+        if (!order.getProductId().equals(dto.productId())) {
             throw new IllegalArgumentException("ProductId 가 일치하지 않음");
         }
         // 2. product 재고 콜 -> 줄었는지 늘었는지 체크
-        if (order.getQuantity() < dto.quantity()){ //기존 주문보다 늘었다면 차이만큼만 재고 Down 요청
+        if (order.getQuantity() < dto.quantity()) { //기존 주문보다 늘었다면 차이만큼만 재고 Down 요청
             productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
                     dto.quantity() - order.getQuantity()
                     , ProductQuantity.DOWN));
-        }else if(order.getQuantity() > dto.quantity()){ // 기존 주문보다 줄었다면 차이만큼 재고 UP 요청
+        } else if (order.getQuantity() > dto.quantity()) { // 기존 주문보다 줄었다면 차이만큼 재고 UP 요청
             productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
                     order.getQuantity() - dto.quantity()
                     , ProductQuantity.UP));
@@ -138,18 +124,6 @@ public class OrderService {
     @Transactional
     public void deleteOrder(UUID orderId, String deletedBy) {
         orderDomainService.delete(orderId, deletedBy);
-    }
-
-    // 재고 복구 api 호출 fallback 메소드 (아직 테스트 중)
-    public OrderDto fallbackForDecreasedQuantity(OrderDto dto, Throwable throwable) {
-        log.error("주문 생성 실패로 인해 fallback 호출됨: ", throwable);
-        // 보상 로직: 수량 증가
-        try {
-            productClient.updateQuantity(dto.productId(),ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.UP));
-        } catch (Exception ex) {
-            log.error("상품 수량 증가 실패: ", ex);
-        }
-        return  dto;
     }
 
 
