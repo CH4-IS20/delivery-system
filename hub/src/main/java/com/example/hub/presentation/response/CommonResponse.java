@@ -31,8 +31,4 @@ public class CommonResponse<T> {
         return new CommonResponse<>(204, message);
     }
 
-    // 에러 반환
-    public static <T> CommonResponse<T> error(T data) {
-        return new CommonResponse<>(204, "ERROR",data);
-    }
 }

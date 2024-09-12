@@ -1,6 +1,5 @@
 package com.example.hub.domain.exception;
 
-import com.example.hub.presentation.response.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +16,11 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class ExceptionManager {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ErrorResponse<?>> applicationExceptionHandler(ApplicationException e) {
         log.error(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(CommonResponse.error(e.getMessage()));
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(ErrorResponse.error(e.getErrorCode()));
     }
 }
