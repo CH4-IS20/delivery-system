@@ -2,6 +2,7 @@ package com.sparta.ch4.delivery.gateway.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.Nonnull;
 import java.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +29,7 @@ public class JwtAuthenticationFilter implements WebFilter {
     private String secretKey;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    public @Nonnull Mono<Void> filter(ServerWebExchange exchange, @Nonnull WebFilterChain chain) {
         if (exchange.getRequest().getURI().getPath().equals("/api/auth/login")
                 || exchange.getRequest().getURI().getPath().equals("/api/auth/register")) {
             return chain.filter(exchange);
