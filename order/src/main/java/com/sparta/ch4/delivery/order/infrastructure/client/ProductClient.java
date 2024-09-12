@@ -22,6 +22,13 @@ public interface ProductClient {
             @PathVariable UUID productId, @RequestBody @Valid ProductUpdateRequest request
     );
 
+
+    /**
+     *
+     * @param productId
+     * @Body: quantity(Integer), upAndDown(ProductQuantity)
+     * @Description: request 요청으로 들어온 quantity 에 대해 더하거나 빼는 API
+     */
     @PutMapping("/api/products/{productId}/quantity")
     void updateQuantity(
             @PathVariable(name = "productId") UUID productId,

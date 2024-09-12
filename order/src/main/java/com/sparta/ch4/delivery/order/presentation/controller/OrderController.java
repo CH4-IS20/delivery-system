@@ -4,6 +4,7 @@ package com.sparta.ch4.delivery.order.presentation.controller;
 import com.sparta.ch4.delivery.order.application.service.OrderService;
 import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
 import com.sparta.ch4.delivery.order.presentation.request.OrderCreateRequest;
+import com.sparta.ch4.delivery.order.presentation.request.OrderUpdateRequest;
 import com.sparta.ch4.delivery.order.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.order.presentation.response.OrderResponse;
 import jakarta.validation.Valid;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,5 +47,29 @@ public class OrderController {
         );
     }
 
+    @GetMapping("/{orderId}")
+    public CommonResponse<OrderResponse> getOrder(@PathVariable UUID orderId){
+        return CommonResponse.success(
+                OrderResponse.from(orderService.getOrder(orderId))
+        );
+    }
 
+    @PutMapping("/{orderId}")
+    public CommonResponse<OrderResponse> updateOrder(
+            @PathVariable UUID orderId,
+            @RequestBody OrderUpdateRequest request,
+            @RequestHeader(name = "X-UserId") String userId
+    ){
+        return CommonResponse.success(
+                OrderResponse.from(orderService.updateOrder(orderId, request.toDto(userId)))
+        );
+    }
+
+    @DeleteMapping("/{orderId}")
+    public void deleteOrder(
+            @PathVariable UUID orderId,
+            @RequestHeader(name = "X-UserId") String userId
+    ){
+        orderService.deleteOrder(orderId,userId);
+    }
 }

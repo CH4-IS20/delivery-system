@@ -57,13 +57,12 @@ public class OrderService {
                 .onError(event -> log.info("#######CircuitBreaker Error: {}", event)); // 오류 발생 이벤트 리스너
     }
 
-    //TODO : client API response 받을 시 data null 인지 확인하는 검증 필요
     @Transactional
     @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackForDecreasedQuantity")
     public OrderDto createOrder(OrderDto dto) {
         try {
             //1. 상품 재고 확인 요청 및 재고 업데이트
-            CallDecreaseProductQuantity(dto);
+            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.DOWN));
 
             // 2. 공급,수령 업체 ID를 바탕으로 허브 서비스에 [경로, 배송담당자, 예상시간,예상거리] 요청
             CommonResponse<List<HubRouteForOrderResponse>> hubRouteResponse = hubRouteClient.getHubRouteForOrder(
@@ -109,22 +108,39 @@ public class OrderService {
         return orderDomainService.getAll(searchType, searchValue, pageable).map(OrderDto::from);
     }
 
-    //TODO: 구현
+    @Transactional
+    public OrderDto getOrder(UUID orderId) {
+        return OrderDto.from(orderDomainService.getOrderById(orderId));
+    }
+
     @Transactional
     public OrderDto updateOrder(UUID orderId, OrderDto dto) {
         // 무엇을 업데이트 할 수 있나?
-        // ->  수량
-
-        return OrderDto.builder().build();
+        // ->  일단 수량만...  / quantity만 업데이트 하는 메소드로 분리할 수 있겠다.
+        // 1. order 조회
+        Order order = orderDomainService.getOrderById(orderId);
+        if (!order.getProductId().equals(dto.productId())){
+            throw new IllegalArgumentException("ProductId 가 일치하지 않음");
+        }
+        // 2. product 재고 콜 -> 줄었는지 늘었는지 체크
+        if (order.getQuantity() < dto.quantity()){ //기존 주문보다 늘었다면 차이만큼만 재고 Down 요청
+            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
+                    dto.quantity() - order.getQuantity()
+                    , ProductQuantity.DOWN));
+        }else if(order.getQuantity() > dto.quantity()){ // 기존 주문보다 줄었다면 차이만큼 재고 UP 요청
+            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
+                    order.getQuantity() - dto.quantity()
+                    , ProductQuantity.UP));
+        }
+        return OrderDto.from(orderDomainService.update(order, dto));
     }
 
-
-    // 재고 감소 api
-    public void CallDecreaseProductQuantity(OrderDto dto) {
-        productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(dto.quantity(), ProductQuantity.DOWN));
+    @Transactional
+    public void deleteOrder(UUID orderId, String deletedBy) {
+        orderDomainService.delete(orderId, deletedBy);
     }
 
-    // 재고 복구 api 호출
+    // 재고 복구 api 호출 fallback 메소드 (아직 테스트 중)
     public OrderDto fallbackForDecreasedQuantity(OrderDto dto, Throwable throwable) {
         log.error("주문 생성 실패로 인해 fallback 호출됨: ", throwable);
         // 보상 로직: 수량 증가

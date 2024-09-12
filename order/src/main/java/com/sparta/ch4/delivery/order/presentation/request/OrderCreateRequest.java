@@ -31,7 +31,6 @@ public record OrderCreateRequest(
 
         @NotBlank(message = "수령인 슬랙 아이디는 비어있을 수 없습니다.")
         String recipientSlack
-
 ) {
 
 

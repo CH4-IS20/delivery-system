@@ -6,10 +6,12 @@ import com.sparta.ch4.delivery.order.domain.model.Order;
 import com.sparta.ch4.delivery.order.domain.repository.OrderRepository;
 import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -26,7 +28,20 @@ public class OrderDomainService {
         return orderRepository.searchOrders(searchType, searchValue, pageable);
     }
 
-//    public Order update(UUID orderId, Order updatedOrder) {
-//        return orderRepository
-//    }
+    public Order getOrderById(UUID orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found By Id"));
+    }
+
+    public Order update(Order updatingOrder, OrderDto dto) {
+        updatingOrder.setQuantity(dto.quantity());
+        updatingOrder.setUpdatedBy(dto.updatedBy());
+        return orderRepository.save(updatingOrder);
+    }
+
+    public void delete(UUID orderId, String deletedBy) {
+        Order order = getOrderById(orderId);
+        order.setDeletedAt(LocalDateTime.now());
+        order.setDeletedBy(deletedBy);
+        order.setIsDeleted(true);
+    }
 }
