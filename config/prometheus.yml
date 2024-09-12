@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s  # How often to scrape targets (default is every 15 seconds)
+  evaluation_interval: 15s  # How often to evaluate rules (default is every 15 seconds)
+  external_labels:
+    monitor: 'delivery-monitor'
+
+scrape_configs:
+  # Scrape Prometheus' own metrics
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'localhost:9090' ]  # Prometheus itself is running on port 9090
+
+  # Example scrape configuration for a Docker-based service
+  - job_name: 'docker-services'
+    static_configs:
+      - targets:
+          - 'gateway-app:18080'  # Gateway app container
+          - 'order-app:19094'    # Order app container
+          - 'user-app:19091'     # User app container
+          - 'hub-app:19093'      # Hub app container
+          - 'company-app:19092'      # Hub app container
+          - 'eureka-app:19090'      # Hub app container
+
+  - job_name: 'monitor-services'
+    static_configs:
+      - targets:
+          - 'zipkin:9411'
+          - 'grafana:3000'
