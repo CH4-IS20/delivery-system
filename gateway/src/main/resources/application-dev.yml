@@ -22,8 +22,8 @@ spring:
           predicates:
             - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**
 
-        - id: delivery
-          uri: http://${DELIVERY_SERVER_HOST}:${DELIVERY_SERVER_HOST}
+        - id: order
+          uri: http://${ORDER_SERVER_HOST}:${ORDER_SERVER_HOST}
           predicates:
             - Path=/api/deliveries/**, /api/orders/**, /api/delivery-histories/**
 
@@ -41,4 +41,3 @@ eureka:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
-  expiration-time: ${JWT_EXPIRATION_TIME}
