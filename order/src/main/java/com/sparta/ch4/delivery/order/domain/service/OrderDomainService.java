@@ -5,6 +5,7 @@ import com.sparta.ch4.delivery.order.application.dto.OrderDto;
 import com.sparta.ch4.delivery.order.domain.model.Order;
 import com.sparta.ch4.delivery.order.domain.repository.OrderRepository;
 import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
+import com.sparta.ch4.delivery.order.domain.type.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,7 @@ public class OrderDomainService {
 
     public void delete(UUID orderId, String deletedBy) {
         Order order = getOrderById(orderId);
+        order.setStatus(OrderStatus.CANCELED);
         order.setDeletedAt(LocalDateTime.now());
         order.setDeletedBy(deletedBy);
         order.setIsDeleted(true);
