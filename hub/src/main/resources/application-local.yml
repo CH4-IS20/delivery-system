@@ -5,9 +5,13 @@ spring:
     activate:
       on-profile: local
   datasource:
-    driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:test'
-    username: sa
+    url: jdbc:postgresql://localhost:5433/hubdelivery
+    username: postgres
+    password: ${DB_SECRET}
+    driver-class-name: org.postgresql.Driver
+#    driver-class-name: org.h2.Driver
+#    url: 'jdbc:h2:mem:test'
+#    username: sa
   h2:
     console:
       enabled: true
