@@ -5,7 +5,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.order.domain.model.Order;
 import com.sparta.ch4.delivery.order.domain.model.QOrder;
-import com.sparta.ch4.delivery.order.domain.repository.OrderRepositoryCustom;
 import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
 import com.sparta.ch4.delivery.order.domain.type.OrderStatus;
 import lombok.RequiredArgsConstructor;

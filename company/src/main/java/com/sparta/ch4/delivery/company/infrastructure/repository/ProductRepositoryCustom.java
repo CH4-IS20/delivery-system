@@ -1,4 +1,4 @@
-package com.sparta.ch4.delivery.company.domain.repository;
+package com.sparta.ch4.delivery.company.infrastructure.repository;
 
 import com.sparta.ch4.delivery.company.domain.model.Product;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;

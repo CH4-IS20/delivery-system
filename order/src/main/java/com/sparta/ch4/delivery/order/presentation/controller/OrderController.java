@@ -57,7 +57,7 @@ public class OrderController {
     @PutMapping("/{orderId}")
     public CommonResponse<OrderResponse> updateOrder(
             @PathVariable UUID orderId,
-            @RequestBody OrderUpdateRequest request,
+            @RequestBody @Valid OrderUpdateRequest request,
             @RequestHeader(name = "X-UserId") String userId
     ){
         return CommonResponse.success(
