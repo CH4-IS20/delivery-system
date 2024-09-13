@@ -38,9 +38,10 @@ public class DeliveryHistoryController {
         );
     }
 
-    //Delivery Id 에 의존적
-    @GetMapping("/delivery/{deliveryId}")
-    public CommonResponse<List<DeliveryHistoryResponse>> getDeliveryHistoriesForDelivery(@PathVariable UUID deliveryId) {
+    @GetMapping("/deliveries/{deliveryId}")
+    public CommonResponse<List<DeliveryHistoryResponse>> getDeliveryHistoriesForDelivery(
+            @PathVariable(name = "deliveryId") UUID deliveryId
+    ) {
         return CommonResponse.success(
                 deliveryHistoryService.getDeliveryHistoriesForDelivery(deliveryId).stream()
                         .map(DeliveryHistoryResponse::from)
@@ -48,8 +49,7 @@ public class DeliveryHistoryController {
         );
     }
 
-    //Delivery Id 에 의존적
-    @DeleteMapping("/delivery/{deliveryId}")
+    @DeleteMapping("/deliveries/{deliveryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDeliveryHistoriesForDelivery(
             @PathVariable UUID deliveryId,
@@ -57,6 +57,4 @@ public class DeliveryHistoryController {
     ) {
         deliveryHistoryService.deleteAllDeliveryHistory(deliveryId, userId);
     }
-
-
 }
