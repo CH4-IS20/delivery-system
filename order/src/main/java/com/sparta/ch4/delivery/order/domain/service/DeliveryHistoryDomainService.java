@@ -2,7 +2,6 @@ package com.sparta.ch4.delivery.order.domain.service;
 
 
 import com.sparta.ch4.delivery.order.application.dto.DeliveryHistoryDto;
-import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
 import com.sparta.ch4.delivery.order.domain.repository.DeliveryHistoryRepository;
 import com.sparta.ch4.delivery.order.domain.repository.DeliveryRepository;

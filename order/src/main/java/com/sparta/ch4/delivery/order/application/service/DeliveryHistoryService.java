@@ -1,7 +1,6 @@
 package com.sparta.ch4.delivery.order.application.service;
 
 
-import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
 import com.sparta.ch4.delivery.order.application.dto.DeliveryHistoryDto;
 import com.sparta.ch4.delivery.order.domain.service.DeliveryHistoryDomainService;
 import lombok.RequiredArgsConstructor;

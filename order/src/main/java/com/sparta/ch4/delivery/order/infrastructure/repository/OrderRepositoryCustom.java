@@ -1,4 +1,4 @@
-package com.sparta.ch4.delivery.order.domain.repository;
+package com.sparta.ch4.delivery.order.infrastructure.repository;
 
 
 import com.sparta.ch4.delivery.order.domain.model.Order;

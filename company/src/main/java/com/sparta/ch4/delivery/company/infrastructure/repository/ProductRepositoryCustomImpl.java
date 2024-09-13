@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.company.domain.model.Product;
 import com.sparta.ch4.delivery.company.domain.model.QCompany;
 import com.sparta.ch4.delivery.company.domain.model.QProduct;
-import com.sparta.ch4.delivery.company.domain.repository.ProductRepositoryCustom;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

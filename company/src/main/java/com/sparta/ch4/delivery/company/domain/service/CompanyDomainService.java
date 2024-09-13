@@ -33,7 +33,7 @@ public class CompanyDomainService {
     }
 
     public Page<CompanyDto> getAllCompanies(CompanySearchType searchType, String searchValue, Pageable pageable) {
-        return companyRepository.searchCompany(searchType, searchValue, pageable).map(CompanyDto::from);
+        return companyRepository.searchCompanies(searchType, searchValue, pageable).map(CompanyDto::from);
     }
 
     public CompanyDto updateCompany(UUID companyId, CompanyDto dto) {

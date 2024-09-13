@@ -31,6 +31,7 @@ public class DeliveryService {
         return deliveryDomainService.getAll(startHubId, endHubId, searchType, searchValue, pageable).map(DeliveryDto::from);
     }
 
+    //  배송 담당자는 자신이 담당하는 배송만 조회 가능
     @Transactional(readOnly = true)
     public DeliveryDto getDelivery(UUID deliveryId){
         return DeliveryDto.from(deliveryDomainService.getOne(deliveryId));
