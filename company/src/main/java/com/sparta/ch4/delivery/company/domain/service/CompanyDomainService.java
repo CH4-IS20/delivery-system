@@ -26,36 +26,28 @@ public class CompanyDomainService {
     }
 
 
-    public CompanyDto getCompanyById(UUID id) {
-        return companyRepository.findById(id).map(CompanyDto::from).orElseThrow(
+    public Company getCompanyById(UUID id) {
+        return companyRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("ID 에 해당하는 업체가 존재하지 않습니다.")
         );
     }
 
-    public Page<CompanyDto> getAllCompanies(CompanySearchType searchType, String searchValue, Pageable pageable) {
-        return companyRepository.searchCompanies(searchType, searchValue, pageable).map(CompanyDto::from);
+    public Page<Company> getAllCompanies(CompanySearchType searchType, String searchValue, Pageable pageable) {
+        return companyRepository.searchCompanies(searchType, searchValue, pageable);
     }
 
-    public CompanyDto updateCompany(UUID companyId, CompanyDto dto) {
-        // company 조회
-        Company company = companyRepository.findById(companyId).orElseThrow(
-                () -> new EntityNotFoundException("ID 에 해당하는 업체가 존재하지 않습니다.")
-        );
+    public Company updateCompany(Company company, CompanyDto updatingDto) {
         // 업데이트
-        company.setHubId(dto.hubId());
-        company.setName(dto.name());
-        company.setType(dto.type());
-        company.setAddress(dto.address());
-        company.setUpdatedBy(dto.updatedBy());
+        company.setHubId(updatingDto.hubId());
+        company.setName(updatingDto.name());
+        company.setType(updatingDto.type());
+        company.setAddress(updatingDto.address());
+        company.setUpdatedBy(updatingDto.updatedBy());
         // 저장
-        return CompanyDto.from(companyRepository.save(company));
+        return companyRepository.save(company);
     }
 
-    public void deleteCompany(UUID companyId, String userId) {
-        // company 조회
-        Company company = companyRepository.findById(companyId).orElseThrow(
-                () -> new EntityNotFoundException("ID 에 해당하는 업체가 존재하지 않습니다.")
-        );
+    public void deleteCompany(Company company, String userId) {
         // Soft delete
         company.setIsDeleted(true);
         company.setDeletedAt(LocalDateTime.now());
