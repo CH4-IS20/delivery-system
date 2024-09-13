@@ -4,11 +4,12 @@ import com.sparta.ch4.delivery.user.application.dto.RegisterDto;
 import com.sparta.ch4.delivery.user.application.dto.UserDto;
 import com.sparta.ch4.delivery.user.application.dto.UserPageDto;
 import com.sparta.ch4.delivery.user.application.dto.UserUpdateDto;
+import com.sparta.ch4.delivery.user.domain.exception.ApplicationException;
+import com.sparta.ch4.delivery.user.domain.exception.ErrorCode;
 import com.sparta.ch4.delivery.user.domain.model.User;
 import com.sparta.ch4.delivery.user.domain.repository.UserPageRepository;
 import com.sparta.ch4.delivery.user.domain.repository.UserRepository;
 import com.sparta.ch4.delivery.user.domain.type.UserSearchType;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +37,7 @@ public class UserDomainService {
 
     public UserDto getUserById(Long userId) {
        return userRepository.findById(userId).map(UserDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("ID 에 해당하는 사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 
     public Page<UserPageDto> getUsers(UserSearchType searchType, String searchValue, Pageable pageable) {
@@ -45,7 +46,7 @@ public class UserDomainService {
 
     public UserDto updateUser(Long userId, UserUpdateDto dto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("ID 에 해당하는 사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
         String password = passwordEncoder.encode(dto.password());
         user.update(dto, password);
         return UserDto.from(userRepository.save(user));
@@ -53,17 +54,17 @@ public class UserDomainService {
 
     public void deleteUserById(Long userId, String deleteBy) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("ID 에 해당하는 사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
         user.delete(deleteBy);
         userRepository.save(user);
     }
 
     private void checkDuplicate(String username, String email) {
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("이미 존재하는 사용자 이름입니다.");
+            throw new ApplicationException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new ApplicationException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
     }
 
