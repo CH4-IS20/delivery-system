@@ -1,0 +1,9 @@
+spring:
+  jackson:
+    time-zone: Asia/Seoul
+
+server:
+  port: 18081
+
+
+
