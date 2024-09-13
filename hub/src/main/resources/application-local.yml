@@ -22,6 +22,12 @@ spring:
 server:
   port: ${HUB_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    path: /hubs/v3/api-docs
+  swagger-ui:
+    path: /hubs/swagger-ui.html
+
 eureka:
   instance:
     hostname: ${HUB_SERVER_HOST}
