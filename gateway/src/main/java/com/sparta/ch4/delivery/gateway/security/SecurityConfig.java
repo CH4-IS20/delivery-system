@@ -24,6 +24,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
 
                         .pathMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        // FIXME: swagger ui에 접근은 되는데 정보를 불러오려 하면 인증을 요구함
+//                        .pathMatchers("/v3/api-docs/**", "/swagger-ui.html", "/webjars/**").permitAll()
 
                         // 사용자 관련
                         .pathMatchers(HttpMethod.GET, "/api/users/{userId}")
@@ -127,7 +129,8 @@ public class SecurityConfig {
                         .hasRole("MASTER") // 허브이동관리 수정
                         .pathMatchers(HttpMethod.DELETE, "/api/hub-routes/{hubRouteId}")
                         .hasRole("MASTER") // 허브이동관리 삭제
-                        .anyExchange().authenticated()
+
+                        .anyExchange().permitAll() // Swagger를 위해 허용
                 );
         return http.build();
     }
