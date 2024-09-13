@@ -1,0 +1,9 @@
+version: '3.8'
+networks:
+  gateway-network:
+    driver: bridge
+  service-network:
+    driver: bridge
+    internal: true
+  monitoring-network:
+    driver: bridge

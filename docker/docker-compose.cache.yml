@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  redis-db:
+    image: redis:7.4
+    container_name: redis-db
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+
+#networks:
+#  service-network:
+#    external: true

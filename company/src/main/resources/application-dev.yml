@@ -4,7 +4,13 @@ spring:
   config:
     activate:
       on-profile: dev
-  #docker에서 DB 환경변수를 넣어주기
+
+  datasource:
+    url: ${COMPANY_SERVER_DB_URL}
+    username: ${COMPANY_SERVER_DB_USERNAME}
+    password: ${COMPANY_SERVER_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create

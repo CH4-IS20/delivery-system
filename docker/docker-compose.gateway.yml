@@ -1,33 +1,40 @@
+version: '3.8'
 services:
   gateway-app:
     container_name: gateway-app
     build:
-      context: .
+      context: ../gateway
       dockerfile: Dockerfile
     restart: always
     ports:
       - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"
     networks:
-      - delivery-msa-net
+      - gateway-network
+      - service-network
+      - monitoring-network
     environment:
       GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
       GATEWAY_SERVER_HOST: ${GATEWAY_SERVER_HOST}
 
       HUB_SERVER_PORT: ${HUB_SERVER_PORT}
-      HUB_SERVER_HOST: ${HUB_SERVER_HOST}
+      HUB_SERVER_HOST: ${HUB_SERVER_CONTAINER_NAME}
 
       USER_SERVER_PORT: ${USER_SERVER_PORT}
-      USER_SERVER_HOST: ${USER_SERVER_HOST}
+      USER_SERVER_HOST: ${USER_SERVER_CONTAINER_NAME}
 
       COMPANY_SERVER_PORT: ${COMPANY_SERVER_PORT}
-      COMPANY_SERVER_HOST: ${COMPANY_SERVER_HOST}
+      COMPANY_SERVER_HOST: ${COMPANY_SERVER_CONTAINER_NAME}
 
       ORDER_SERVER_PORT: ${ORDER_SERVER_PORT}
-      ORDER_SERVER_HOST: ${ORDER_SERVER_HOST}
+      ORDER_SERVER_HOST: ${ORDER_SERVER_CONTAINER_NAME}
 
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
 
 networks:
-  delivery-msa-net:
+  gateway-network:
+    external: true
+  service-network:
+    external: true
+  monitoring-network:
     external: true
