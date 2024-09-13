@@ -5,6 +5,12 @@ spring:
     activate:
       on-profile: dev
 
+  datasource:
+    url: ${USER_SERVER_DB_URL}
+    username: ${USER_SERVER_DB_USERNAME}
+    password: ${USER_SERVER_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
