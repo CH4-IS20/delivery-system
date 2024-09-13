@@ -8,6 +8,8 @@ import com.sparta.ch4.delivery.company.presentation.request.ProductQuantityUpdat
 import com.sparta.ch4.delivery.company.presentation.request.ProductUpdateRequest;
 import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.company.presentation.response.ProductResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,17 +24,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products")
+@Tag(name = "Product API", description = "상품 CRUD")
 public class ProductController {
     private final ProductService productService;
 
     // Header 에 들어온 userId 로 createdBy 설정
     @PostMapping
+    @Operation(summary = "상품 생성", description = "상품 생성 API")
     public CommonResponse<ProductResponse> createProduct(
             @Valid @RequestBody ProductCreateRequest request,
             @RequestHeader("X-UserId") String userId
     ) {
         return CommonResponse.success(
-                ProductResponse.from(productService.createProduct(request.toDto(userId)))
+                ProductResponse.from(productService.createProduct(request.toDto(userId), userId))
         );
     }
 
@@ -68,7 +72,7 @@ public class ProductController {
             @RequestHeader("X-UserId") String userId
     ) {
         return CommonResponse.success(
-                ProductResponse.from(productService.updateProduct(productId, request.toDto(userId)))
+                ProductResponse.from(productService.updateProduct(productId, request.toDto(userId), userId))
         );
     }
 
@@ -82,7 +86,7 @@ public class ProductController {
         productService.deleteProduct(productId, userId);
     }
 
-    @PutMapping("/api/products/{productId}/quantity")
+    @PutMapping("/{productId}/quantity")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateQuantity(
             @PathVariable(name = "productId") UUID productId,
