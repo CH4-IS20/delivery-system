@@ -5,6 +5,7 @@ import com.sparta.ch4.delivery.order.application.service.DeliveryHistoryService;
 import com.sparta.ch4.delivery.order.presentation.request.DeliveryHistoryStatusUpdateRequest;
 import com.sparta.ch4.delivery.order.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.order.presentation.response.DeliveryHistoryResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class DeliveryHistoryController {
     @PutMapping("/{deliveryHistoryId}")
     public CommonResponse<DeliveryHistoryResponse> updateDeliveryHistoryForRealEstimate(
             @PathVariable UUID deliveryHistoryId,
-            @RequestBody DeliveryHistoryStatusUpdateRequest request,
+            @RequestBody @Valid DeliveryHistoryStatusUpdateRequest request,
             @RequestHeader(name = "X-UserId") String userId
     ) {
         return CommonResponse.success(
