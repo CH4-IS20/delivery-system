@@ -4,6 +4,7 @@ COMPOSE_DIR="./docker"
 
 COMPOSE_FILES=(
     "docker-compose.network.yml"
+    "docker-compose.cache.yml"
     "docker-compose.company.yml"
     "docker-compose.order.yml"
     "docker-compose.user.yml"
