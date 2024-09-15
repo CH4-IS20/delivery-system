@@ -9,9 +9,12 @@ import com.sparta.ch4.delivery.company.presentation.request.ProductUpdateRequest
 import com.sparta.ch4.delivery.company.presentation.response.CommonResponse;
 import com.sparta.ch4.delivery.company.presentation.response.ProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,12 +44,17 @@ public class ProductController {
     }
 
     @GetMapping
+    @Operation(summary = "상품 전체 조회", description = "상품 전체 조회 API")
     public CommonResponse<Page<ProductResponse>> getProducts(
+            @Parameter(name = "companyId", description = "상품의 관리 업체 ID")
             @RequestParam(required = false, name = "companyId") UUID companyId,
+            @Parameter(name = "hubId", description = "상품의 관리 허브 ID")
             @RequestParam(required = false, name = "hubId") UUID hubId,
+            @Parameter(name = "searchType", description = "검색 조건 (Enum) 설정", schema = @Schema(implementation = ProductSearchType.class))
             @RequestParam(required = false, name = "searchType") ProductSearchType searchType,
+            @Parameter(name = "searchValue", description = "검색 조건 기준으로 한 검색어")
             @RequestParam(required = false, name = "searchValue") String searchValue,
-            @PageableDefault(
+            @ParameterObject @PageableDefault(
                     size = 10, sort = {"createdAt", "updatedAt"}, direction = Sort.Direction.DESC
             ) Pageable pageable
     ) {
@@ -56,6 +64,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+    @Operation(summary = "상품 단건 조회", description = "상품 단건 조회 API")
     public CommonResponse<ProductResponse> getProduct(
             @PathVariable(name = "productId") UUID productId
     ) {
@@ -66,6 +75,7 @@ public class ProductController {
 
     // Header 에 들어온 userId 로 updatedBy 설정
     @PutMapping("/{productId}")
+    @Operation(summary = "상품 수정", description = "상품 정보 수정 API, [관리 업체, 허브, 상품이름, 재고]")
     public CommonResponse<ProductResponse> updateProduct(
             @PathVariable(name = "productId") UUID productId,
             @Valid @RequestBody ProductUpdateRequest request,
@@ -79,6 +89,7 @@ public class ProductController {
     // Header 에 들어온 userId 로 deletedBy 설정
     @DeleteMapping("/{productId}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @Operation(summary = "상품 삭제", description = "상품 삭제 API,")
     public void delete(
             @PathVariable(name = "productId") UUID productId,
             @RequestHeader("X-UserId") String userId
@@ -88,6 +99,7 @@ public class ProductController {
 
     @PutMapping("/{productId}/quantity")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "[for Order API] 상품 수량 추가/차감", description = "주문한 상품 재고 수정 API")
     public void updateQuantity(
             @PathVariable(name = "productId") UUID productId,
             @RequestBody @Valid ProductQuantityUpdateRequest request
