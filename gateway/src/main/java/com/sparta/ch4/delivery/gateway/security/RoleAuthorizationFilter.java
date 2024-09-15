@@ -2,8 +2,9 @@ package com.sparta.ch4.delivery.gateway.security;
 
 import jakarta.annotation.Nonnull;
 import java.util.Map;
-import org.redisson.api.RMapCache;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.RMapCacheReactive;
+import org.redisson.api.RedissonReactiveClient;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
@@ -13,13 +14,14 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 @Component
+@Order(1)
 public class RoleAuthorizationFilter implements WebFilter {
 
-    private final RedissonClient redissonClient;
+    private final RedissonReactiveClient redissonClient;
 
     private static final String POLICY_CACHE_KEY = "endpointPolicyCache";
 
-    public RoleAuthorizationFilter(RedissonClient redissonClient) {
+    public RoleAuthorizationFilter(RedissonReactiveClient redissonClient) {
         this.redissonClient = redissonClient;
     }
 
@@ -29,14 +31,7 @@ public class RoleAuthorizationFilter implements WebFilter {
         String method = String.valueOf(exchange.getRequest().getMethod());
 
         // Swagger UI 및 관련 리소스 경로, 각 서비스의 API 문서 경로는 필터 제외
-        if (path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/webjars/swagger-ui") ||
-                path.equals("/favicon.ico") ||
-                path.startsWith("/users/v3/api-docs") ||
-                path.startsWith("/companies/v3/api-docs") ||
-                path.startsWith("/hubs/v3/api-docs") ||
-                path.startsWith("/orders/v3/api-docs")) {
+        if (isPublicPath(path)) {
             return chain.filter(exchange);
         }
 
@@ -48,49 +43,68 @@ public class RoleAuthorizationFilter implements WebFilter {
         // Reactive Security Context에서 Authentication 가져오기
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
-                .flatMap(authentication -> {
-                    // 해당 경로와 메서드에 대한 정책을 Redis에서 가져옴
-                    String policy = getPolicy(path, method);
+                .flatMap(authentication ->
+                        // 해당 경로와 메서드에 대한 정책을 Reactive 방식으로 Redis에서 가져옴
+                        getPolicyWithRegex(path, method)
+                                .flatMap(policy -> {
+                                    // 정책이 없으면 접근이 금지됨 (403 Forbidden)
+                                    if (policy == null) {
+                                        exchange.getResponse().setStatusCode(
+                                                org.springframework.http.HttpStatus.FORBIDDEN);
+                                        return exchange.getResponse().setComplete();
+                                    }
 
-                    // 정책이 없으면 접근이 금지됨 (403 Forbidden)
-                    if (policy == null) {
-                        exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.FORBIDDEN);
-                        return exchange.getResponse().setComplete();
-                    }
+                                    // 인증 정보가 없거나 인증되지 않은 사용자인 경우 접근이 금지됨 (401 Unauthorized)
+                                    if (authentication == null
+                                            || !authentication.isAuthenticated()) {
+                                        exchange.getResponse().setStatusCode(
+                                                org.springframework.http.HttpStatus.UNAUTHORIZED);
+                                        return exchange.getResponse().setComplete();
+                                    }
 
-                    // 인증 정보가 없거나 인증되지 않은 사용자인 경우 접근이 금지됨 (401 Unauthorized)
-                    if (authentication == null || !authentication.isAuthenticated()) {
-                        exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
-                        return exchange.getResponse().setComplete();
-                    }
+                                    // 정책이 "authenticated"로 설정된 경우 인증된 사용자만 통과
+                                    if (policy.equals("authenticated")) {
+                                        return chain.filter(exchange);
+                                    }
 
-                    // 정책이 "authenticated"로 설정된 경우 인증된 사용자만 통과
-                    if (policy.equals("authenticated")) {
-                        return chain.filter(exchange);
-                    }
+                                    // 인증된 사용자의 권한 중 하나가 정책에 맞는지 확인
+                                    boolean hasAccess = authentication.getAuthorities().stream()
+                                            .anyMatch(grantedAuthority -> policy.contains(
+                                                    grantedAuthority.getAuthority()));
 
-                    // 인증된 사용자의 권한 중 하나가 정책에 맞는지 확인
-                    boolean hasAccess = authentication.getAuthorities().stream()
-                            .anyMatch(grantedAuthority -> policy.contains(grantedAuthority.getAuthority()));
+                                    // 권한이 맞지 않으면 접근이 금지됨 (403 Forbidden)
+                                    if (!hasAccess) {
+                                        exchange.getResponse().setStatusCode(
+                                                org.springframework.http.HttpStatus.FORBIDDEN);
+                                        return exchange.getResponse().setComplete();
+                                    }
 
-                    // 권한이 맞지 않으면 접근이 금지됨 (403 Forbidden)
-                    if (!hasAccess) {
-                        exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.FORBIDDEN);
-                        return exchange.getResponse().setComplete();
-                    }
-
-                    return chain.filter(exchange);
-                });
+                                    return chain.filter(exchange);
+                                })
+                );
     }
 
-    // 정책을 조회 (엔드포인트와 메서드 기반으로 조회)
-    public String getPolicy(String endpoint, String method) {
-        RMapCache<String, Map<String, String>> policyCache = redissonClient.getMapCache(POLICY_CACHE_KEY);
-        Map<String, String> methodRoles = policyCache.get(endpoint);
-        if (methodRoles != null) {
-            return methodRoles.get(method);
-        }
-        return null;
+    public Mono<String> getPolicyWithRegex(String path, String method) {
+        RMapCacheReactive<String, Map<String, String>> policyCache = redissonClient.getMapCache(POLICY_CACHE_KEY);
+
+        // 다양한 경로 변수들을 처리할 수 있는 정규식을 사용하여 경로 일반화 (e.g. /api/users/1 -> /api/users/{id})
+        String normalizedPath = path.replaceAll("/\\d+$", "/{id}");
+
+        // 일반화된 경로로 Redis에서 정책 조회
+        return policyCache.get(normalizedPath)
+                .flatMap(methodRoles -> Mono.justOrEmpty(methodRoles.get(method)));
+    }
+
+
+    private boolean isPublicPath(String path) {
+        return path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/webjars/swagger-ui") ||
+                path.equals("/favicon.ico") ||
+                path.startsWith("/users/v3/api-docs") ||
+                path.startsWith("/companies/v3/api-docs") ||
+                path.startsWith("/hubs/v3/api-docs") ||
+                path.startsWith("/orders/v3/api-docs");
     }
 
 }
