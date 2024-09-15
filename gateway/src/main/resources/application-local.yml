@@ -48,6 +48,9 @@ springdoc:
       - url: http://${GATEWAY_SERVER_HOST}:${GATEWAY_SERVER_PORT}/orders/v3/api-docs
         name: Order
 
+redisson:
+  url: redis://${REDIS_HOST}:${REDIS_PORT}
+
 eureka:
   instance:
     hostname: ${GATEWAY_SERVER_HOST}

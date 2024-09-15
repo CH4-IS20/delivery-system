@@ -3,7 +3,10 @@ spring:
     time-zone: Asia/Seoul
 
 server:
-  port: 18081
+  port: ${POLICY_SERVER_PORT}
+
+redisson:
+  url: redis://${REDIS_HOST}:${REDIS_PORT}
 
 
 

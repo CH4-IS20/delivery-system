@@ -30,6 +30,9 @@ services:
       # 기타 환경 변수 관련
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
 
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+
 networks:
   external-network:
     external: true
