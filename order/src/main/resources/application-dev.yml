@@ -21,6 +21,12 @@ spring:
 server:
   port: ${ORDER_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    path: /orders/v3/api-docs
+  swagger-ui:
+    path: /orders/swagger-ui.html
+
 eureka:
   instance:
     hostname: ${ORDER_SERVER_HOST}
