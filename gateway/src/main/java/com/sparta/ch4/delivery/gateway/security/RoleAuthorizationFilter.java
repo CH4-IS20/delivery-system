@@ -28,6 +28,18 @@ public class RoleAuthorizationFilter implements WebFilter {
         String path = exchange.getRequest().getURI().getPath();
         String method = String.valueOf(exchange.getRequest().getMethod());
 
+        // Swagger UI 및 관련 리소스 경로, 각 서비스의 API 문서 경로는 필터 제외
+        if (path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/webjars/swagger-ui") ||
+                path.equals("/favicon.ico") ||
+                path.startsWith("/users/v3/api-docs") ||
+                path.startsWith("/companies/v3/api-docs") ||
+                path.startsWith("/hubs/v3/api-docs") ||
+                path.startsWith("/orders/v3/api-docs")) {
+            return chain.filter(exchange);
+        }
+
         // 로그인, 회원가입 엔드포인트는 권한 체크 제외
         if (path.equals("/api/auth/login") || path.equals("/api/auth/register")) {
             return chain.filter(exchange);
