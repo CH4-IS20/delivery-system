@@ -18,6 +18,12 @@ spring:
 server:
   port: ${COMPANY_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    path: /companies/v3/api-docs
+  swagger-ui:
+    path: /companies/swagger-ui.html
+
 eureka:
   instance:
     hostname: ${COMPANY_SERVER_HOST}
