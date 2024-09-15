@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.Nonnull;
 import java.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@Order(0)
 public class JwtAuthenticationFilter implements WebFilter {
 
     @Value("${jwt.secret-key}")
