@@ -13,7 +13,7 @@ public class PolicyController {
         this.policyService = policyService;
     }
 
-    @GetMapping("/update")
+    @GetMapping("/policies/update")
     public void updatePolicy() {
         policyService.initPolicies();
     }

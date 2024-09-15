@@ -1,6 +1,7 @@
 package com.sparta.ch4.delivery.gateway.security;
 
 import jakarta.annotation.Nonnull;
+import java.util.Map;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -25,16 +26,19 @@ public class RoleAuthorizationFilter implements WebFilter {
     @Override
     public @Nonnull Mono<Void> filter(ServerWebExchange exchange, @Nonnull WebFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
-        if (exchange.getRequest().getURI().getPath().equals("/api/auth/login")
-                || exchange.getRequest().getURI().getPath().equals("/api/auth/register")) {
+        String method = String.valueOf(exchange.getRequest().getMethod());
+
+        // 로그인, 회원가입 엔드포인트는 권한 체크 제외
+        if (path.equals("/api/auth/login") || path.equals("/api/auth/register")) {
             return chain.filter(exchange);
         }
-        // Reactive Security Context 에서 Authentication 가져오기
+
+        // Reactive Security Context에서 Authentication 가져오기
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .flatMap(authentication -> {
-                    // 해당 경로에 대한 정책을 Redis 에서 가져옴
-                    String policy = getPolicy(path);
+                    // 해당 경로와 메서드에 대한 정책을 Redis에서 가져옴
+                    String policy = getPolicy(path, method);
 
                     // 정책이 없으면 접근이 금지됨 (403 Forbidden)
                     if (policy == null) {
@@ -65,12 +69,16 @@ public class RoleAuthorizationFilter implements WebFilter {
 
                     return chain.filter(exchange);
                 });
-
     }
 
-    // 정책을 조회
-    public String getPolicy(String endpoint) {
-        RMapCache<String, String> policyCache = redissonClient.getMapCache(POLICY_CACHE_KEY);
-        return policyCache.get(endpoint);
+    // 정책을 조회 (엔드포인트와 메서드 기반으로 조회)
+    public String getPolicy(String endpoint, String method) {
+        RMapCache<String, Map<String, String>> policyCache = redissonClient.getMapCache(POLICY_CACHE_KEY);
+        Map<String, String> methodRoles = policyCache.get(endpoint);
+        if (methodRoles != null) {
+            return methodRoles.get(method);
+        }
+        return null;
     }
+
 }
