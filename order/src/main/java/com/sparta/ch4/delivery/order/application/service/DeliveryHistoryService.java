@@ -2,6 +2,7 @@ package com.sparta.ch4.delivery.order.application.service;
 
 
 import com.sparta.ch4.delivery.order.application.dto.DeliveryHistoryDto;
+import com.sparta.ch4.delivery.order.domain.service.DeliveryDomainService;
 import com.sparta.ch4.delivery.order.domain.service.DeliveryHistoryDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
