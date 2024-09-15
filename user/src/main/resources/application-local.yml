@@ -39,3 +39,7 @@ jwt:
 
 slack:
   webhook-url: ${SLACK_WEBHOOK_URL}
+
+gateway:
+  host: ${GATEWAY_SERVER_HOST}
+  port: ${GATEWAY_SERVER_PORT}

@@ -27,6 +27,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
     @ApiResponse(responseCode = "200", description = "회원가입이 성공적으로 완료되었습니다.")
+    @ApiResponse(responseCode = "409", description = "이미 존재하는 사용자 이름입니다.")
     @PostMapping("/register")
     public CommonResponse<UserResponse> register(
             @Parameter(description = "회원가입 요청 데이터") @Valid @RequestBody RegisterRequest request) {
