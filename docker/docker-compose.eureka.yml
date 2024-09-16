@@ -8,11 +8,17 @@ services:
     ports:
       - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
     networks:
-      - service-network
+      - external-network
+      - internal-network
+      - monitoring-network
     environment:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
       EUREKA_SERVER_HOST: ${EUREKA_SERVER_HOST}
 
 networks:
-  service-network:
+  external-network:
+    external: true
+  internal-network:
+    external: true
+  monitoring-network:
     external: true

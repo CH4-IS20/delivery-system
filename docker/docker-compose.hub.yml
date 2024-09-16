@@ -1,18 +1,18 @@
-version: '3.8'
 services:
   hub-db:
-    image: postgres:16.4
+    image: bitnami/postgresql:16.4.0
     container_name: hub-db
     environment:
       POSTGRES_USER: ${HUB_SERVER_DB_USERNAME}
       POSTGRES_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
       POSTGRES_DB: ${HUB_SERVER_DB_NAME}
+      POSTGRESQL_PORT_NUMBER: ${HUB_SERVER_DB_PORT}
     ports:
       - "${HUB_SERVER_DB_PORT}:${HUB_SERVER_DB_PORT}"
     volumes:
       - postgres-data:${HUB_SERVER_DB_VOLUMES}
     networks:
-      - service-network
+      - external-network
 
   hub-app:
     container_name: hub-app
@@ -25,15 +25,31 @@ services:
     ports:
       - "${HUB_SERVER_PORT}:${HUB_SERVER_PORT}"
     networks:
-      - service-network
+      - external-network
     environment:
-      SPRING_DATASOURCE_URL: ${HUB_SERVER_DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${HUB_SERVER_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
-      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+
+      # hub 관련
+      HUB_SERVER_PORT: ${HUB_SERVER_PORT}
+      HUB_SERVER_CONTAINER_NAME: ${HUB_SERVER_CONTAINER_NAME}
+
+      # datasource 관련
+      HUB_SERVER_DB_CONTAINER_NAME: ${HUB_SERVER_DB_CONTAINER_NAME}
+      HUB_SERVER_DB_PORT: ${HUB_SERVER_DB_PORT}
+      HUB_SERVER_DB_NAME: ${HUB_SERVER_DB_NAME}
+      HUB_SERVER_DB_USERNAME: ${HUB_SERVER_DB_USERNAME}
+      HUB_SERVER_DB_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+
+      # 기타 환경 변수 관련
+      NAVER_SECRET_KEY: ${NAVER_SECRET_KEY}
+      NAVER_ACCESS_KEY: ${NAVER_ACCESS_KEY}
+      GOOGLE_MAP_KEY: ${GOOGLE_MAP_KEY}
 
 networks:
-  service-network:
+  external-network:
     external: true
 volumes:
   postgres-data:
