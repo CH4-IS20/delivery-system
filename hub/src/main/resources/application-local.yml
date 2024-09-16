@@ -23,7 +23,6 @@ springdoc:
     path: /hubs/v3/api-docs
   swagger-ui:
     path: /hubs/swagger-ui.html
-  enable-spring-security: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
@@ -33,6 +32,6 @@ eureka:
     hostname: ${HUB_SERVER_HOST}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true  # Eureka 서버에 등록
     fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기

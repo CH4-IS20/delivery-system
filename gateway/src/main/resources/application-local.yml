@@ -25,12 +25,12 @@ spring:
         - id: hub
           uri: lb://hub
           predicates:
-            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**, /hubs/v3/api-docs,
+            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**, /hubs/v3/api-docs
 
         - id: order
           uri: lb://order
           predicates:
-            - Path=/api/deliveries/**, /api/delivery-histories/**, /api/orders/**, /orders/v3/api-docs
+            - Path=/api/deliveries/**, /api/orders/**, /api/delivery-histories/**, /orders/v3/api-docs
 
 server:
   port: ${GATEWAY_SERVER_PORT}
@@ -38,7 +38,6 @@ server:
 springdoc:
   swagger-ui:
     use-root-path: true # 게이트웨이 들어오면 자동으로 swagger로 가짐
-    enabled: true
     urls:
       - url: http://${GATEWAY_SERVER_HOST}:${GATEWAY_SERVER_PORT}/users/v3/api-docs
         name: User
@@ -54,7 +53,7 @@ eureka:
     hostname: ${GATEWAY_SERVER_HOST}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true
     fetch-registry: true
 
