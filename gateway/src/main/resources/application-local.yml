@@ -57,5 +57,21 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST}:${ZIPKIN_PORT}/api/v2/spans
+  tracing:
+    sampling:
+      probability: 0.1
+
 jwt:
   secret-key: ${JWT_SECRET_KEY}

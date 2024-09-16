@@ -1,9 +1,10 @@
-version: '3.8'
 services:
   zipkin:
     image: openzipkin/zipkin
     ports:
-      - "9411:9411"
+      - "${ZIPKIN_PORT}:${ZIPKIN_PORT}"
+    networks:
+      - external-network
 
   prometheus:
     image: prom/prometheus
@@ -18,3 +19,7 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
+
+networks:
+  external-network:
+    external: true
