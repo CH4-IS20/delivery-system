@@ -8,24 +8,24 @@ spring:
     gateway:
       routes:
         - id: user
-          uri: http://${USER_SERVER_HOST}:${USER_SERVER_PORT}
+          uri: lb://user
           predicates:
             - Path=/api/users/**, /api/auth/**, /users/v3/api-docs
 
         - id: company
-          uri: http://${COMPANY_SERVER_HOST}:${COMPANY_SERVER_PORT}
+          uri: lb://company
           predicates:
             - Path=/api/companies/**, /api/products/**, /companies/v3/api-docs
 
         - id: hub
-          uri: http://${HUB_SERVER_HOST}:${HUB_SERVER_HOST}
+          uri: lb://hub
           predicates:
-            - Path=/api/hubs/**, /api/hub-routes/**, /hubs/v3/api-docs
+            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**, /hubs/v3/api-docs
 
         - id: order
-          uri: http://${ORDER_SERVER_HOST}:${ORDER_SERVER_HOST}
+          uri: lb://order
           predicates:
-            - Path=/api/deliveries/**, /api/orders/**, /orders/v3/api-docs
+              - Path=/api/deliveries/**, /api/orders/**, /api/delivery-histories/**, /orders/v3/api-docs
 
 server:
   port: ${GATEWAY_SERVER_PORT}
@@ -44,12 +44,13 @@ springdoc:
         name: Hub
       - url: /orders/v3/api-docs
         name: Order
+
 eureka:
   instance:
-    hostname: ${GATEWAY_SERVER_HOST}
+    hostname: ${GATEWAY_SERVER_CONTAINER_NAME}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true
     fetch-registry: true
 

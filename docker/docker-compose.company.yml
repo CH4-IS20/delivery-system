@@ -1,17 +1,18 @@
 services:
   company-db:
-    image: postgres:16.4
+    image: bitnami/postgresql:16.4.0
     container_name: company-db
     environment:
       POSTGRES_USER: ${COMPANY_SERVER_DB_USERNAME}
       POSTGRES_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
       POSTGRES_DB: ${COMPANY_SERVER_DB_NAME}
+      POSTGRESQL_PORT_NUMBER: ${COMPANY_SERVER_DB_PORT}
     ports:
       - "${COMPANY_SERVER_DB_PORT}:${COMPANY_SERVER_DB_PORT}"
     volumes:
       - postgres-data:${COMPANY_SERVER_DB_VOLUMES}
     networks:
-      - service-network
+      - external-network
 
   company-app:
     container_name: company-app
@@ -24,17 +25,26 @@ services:
     ports:
       - "${COMPANY_SERVER_PORT}:${COMPANY_SERVER_PORT}"
     networks:
-      - service-network
+      - external-network
     environment:
-      SPRING_DATASOURCE_URL: ${COMPANY_SERVER_DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${COMPANY_SERVER_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
+
+      # company 관련
       COMPANY_SERVER_PORT: ${COMPANY_SERVER_PORT}
-      COMPANY_SERVER_HOST: ${COMPANY_SERVER_HOST}
-      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      COMPANY_SERVER_CONTAINER_NAME: ${COMPANY_SERVER_CONTAINER_NAME}
+
+      # datasource 관련
+      COMPANY_SERVER_DB_CONTAINER_NAME: ${COMPANY_SERVER_DB_CONTAINER_NAME}
+      COMPANY_SERVER_DB_PORT: ${COMPANY_SERVER_DB_PORT}
+      COMPANY_SERVER_DB_NAME: ${COMPANY_SERVER_DB_NAME}
+      COMPANY_SERVER_DB_USERNAME: ${COMPANY_SERVER_DB_USERNAME}
+      COMPANY_SERVER_DB_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
 
 networks:
-  service-network:
+  external-network:
     external: true
 
 volumes:

@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   gateway-app:
     container_name: gateway-app
@@ -9,32 +8,26 @@ services:
     ports:
       - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"
     networks:
-      - gateway-network
-      - service-network
+      - external-network
+      - internal-network
       - monitoring-network
     environment:
+
+      # gateway 관련
       GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
-      GATEWAY_SERVER_HOST: ${GATEWAY_SERVER_HOST}
+      GATEWAY_SERVER_CONTAINER_NAME: ${GATEWAY_SERVER_CONTAINER_NAME}
 
-      HUB_SERVER_PORT: ${HUB_SERVER_PORT}
-      HUB_SERVER_HOST: ${HUB_SERVER_CONTAINER_NAME}
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
 
-      USER_SERVER_PORT: ${USER_SERVER_PORT}
-      USER_SERVER_HOST: ${USER_SERVER_CONTAINER_NAME}
-
-      COMPANY_SERVER_PORT: ${COMPANY_SERVER_PORT}
-      COMPANY_SERVER_HOST: ${COMPANY_SERVER_CONTAINER_NAME}
-
-      ORDER_SERVER_PORT: ${ORDER_SERVER_PORT}
-      ORDER_SERVER_HOST: ${ORDER_SERVER_CONTAINER_NAME}
-
-      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      # 기타 환경 변수 관련
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
 
 networks:
-  gateway-network:
+  external-network:
     external: true
-  service-network:
+  internal-network:
     external: true
   monitoring-network:
     external: true
