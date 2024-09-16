@@ -36,8 +36,13 @@ public class DeliveryManagerDomainService {
         }
 
         if(request.type() == DeliveryManagerType.StoreDelivery){
+            // 업체 배송자인데 Hub Id를 입력하지 않은 경우
+            if(request.hubId() == null){
+                throw new ApplicationException(ErrorCode.INPUT_HUBNAME);
+            }
+
             Hub hub = hubRepository.findById(request.hubId())
-                        .orElseThrow(() -> new ApplicationException(ErrorCode.HUB_NOT_FOUND));
+                    .orElseThrow(() -> new ApplicationException(ErrorCode.HUB_NOT_FOUND));
 
             // 해당 허브에 인원이 10명 미만인지 체크
             if(hub.getDeliveryManagers().size() < 10){
@@ -61,7 +66,7 @@ public class DeliveryManagerDomainService {
         // 현재 찾고 싶은 deliveryMangerId값을 통해 찾아온 데이터
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryManagerId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.DELIVERYMANAGER_NOT_FOUND));
-        
+
         // TODO : 권한이 허브 관리자일 경우 해당 허브 구분 / user부분에 상세 hub값 필요
 
         // 배송담당자일 경우
@@ -86,7 +91,7 @@ public class DeliveryManagerDomainService {
         // TODO : 권한이 허브 관리자일경우 해당 허브 구분(본인의 허브안의 배송 담당자만 관리 가능)
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryManagerId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.DELIVERYMANAGER_NOT_FOUND));
-        
+
         Hub hub;
 
         // 허브가 변경되었는지 확인, 만약 변경되었으면 새로운 허브 객체 생성

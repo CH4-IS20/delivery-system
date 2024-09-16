@@ -44,4 +44,9 @@ public class DeliveryManager extends BaseEntity {
         this.type = request.type() != null ? request.type() : this.type;
     }
 
+    // 배송 담당자 현재 상태 변경
+    public void update(boolean status){
+        this.status = status;
+    }
+
 }
