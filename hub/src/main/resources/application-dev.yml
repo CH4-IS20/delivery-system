@@ -26,6 +26,8 @@ springdoc:
     path: /hubs/v3/api-docs
   swagger-ui:
     path: /hubs/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 
 naver:
   secret:

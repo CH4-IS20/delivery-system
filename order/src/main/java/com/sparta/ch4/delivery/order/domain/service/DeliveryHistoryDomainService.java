@@ -38,6 +38,9 @@ public class DeliveryHistoryDomainService {
         deliveryHistory.setActualDuration(updatingDto.actualDuration());
         deliveryHistory.setStatus(updatingDto.status());
         deliveryHistory.setUpdatedBy(updatingDto.updatedBy());
+        //배송 엔티티 상태도 수정
+        deliveryHistory.getDelivery().setStatus(updatingDto.status());
+        deliveryHistory.getDelivery().setUpdatedBy(updatingDto.updatedBy());
         return deliveryHistoryRepository.save(deliveryHistory);
     }
 

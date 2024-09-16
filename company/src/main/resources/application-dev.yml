@@ -26,6 +26,8 @@ springdoc:
     path: /companies/v3/api-docs
   swagger-ui:
     path: /companies/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 
 eureka:
   instance:

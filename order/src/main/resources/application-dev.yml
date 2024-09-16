@@ -21,6 +21,14 @@ spring:
 server:
   port: ${ORDER_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    path: /orders/v3/api-docs
+  swagger-ui:
+    path: /orders/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
 eureka:
   instance:
     hostname: ${ORDER_SERVER_CONTAINER_NAME}

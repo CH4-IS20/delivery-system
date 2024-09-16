@@ -6,6 +6,9 @@ spring:
       on-profile: dev
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
       routes:
         - id: user
           uri: lb://user
@@ -31,18 +34,16 @@ server:
   port: ${GATEWAY_SERVER_PORT}
 
 springdoc:
-  api-docs:
-    enabled: true
   swagger-ui:
-    enabled: true
+#    use-root-path: true # 게이트웨이 들어오면 자동으로 swagger로 가짐
     urls:
-      - url: /users/v3/api-docs
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/users/v3/api-docs
         name: User
-      - url: /companies/v3/api-docs
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/companies/v3/api-docs
         name: Company
-      - url: /hubs/v3/api-docs
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/hubs/v3/api-docs
         name: Hub
-      - url: /orders/v3/api-docs
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/orders/v3/api-docs
         name: Order
 
 eureka:
