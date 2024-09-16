@@ -61,9 +61,6 @@ management:
     web:
       exposure:
         include: health, info, metrics
-  endpoint:
-    health:
-      show-details: always
   zipkin:
     tracing:
       endpoint: http://${ZIPKIN_CONTAINER_NAME}:${ZIPKIN_PORT}/api/v2/spans
