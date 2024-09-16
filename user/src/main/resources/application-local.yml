@@ -18,12 +18,22 @@ spring:
 server:
   port: ${USER_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /users/v3/api-docs
+  swagger-ui:
+    path: /users/swagger-ui.html
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
 eureka:
   instance:
     hostname: ${USER_SERVER_HOST}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true
     fetch-registry: true
 

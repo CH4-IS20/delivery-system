@@ -5,13 +5,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5433/hubdelivery
-    username: postgres
-    password: ${DB_SECRET}
-    driver-class-name: org.postgresql.Driver
-#    driver-class-name: org.h2.Driver
-#    url: 'jdbc:h2:mem:test'
-#    username: sa
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:test'
+    username: sa
   h2:
     console:
       enabled: true
@@ -22,12 +18,21 @@ spring:
 server:
   port: ${HUB_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    path: /hubs/v3/api-docs
+  swagger-ui:
+    path: /hubs/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+
 eureka:
   instance:
     hostname: ${HUB_SERVER_HOST}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true  # Eureka 서버에 등록
     fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
 

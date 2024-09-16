@@ -1,0 +1,55 @@
+services:
+  hub-db:
+    image: bitnami/postgresql:16.4.0
+    container_name: hub-db
+    environment:
+      POSTGRES_USER: ${HUB_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${HUB_SERVER_DB_NAME}
+      POSTGRESQL_PORT_NUMBER: ${HUB_SERVER_DB_PORT}
+    ports:
+      - "${HUB_SERVER_DB_PORT}:${HUB_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${HUB_SERVER_DB_VOLUMES}
+    networks:
+      - external-network
+
+  hub-app:
+    container_name: hub-app
+    build:
+      context: ../hub
+      dockerfile: Dockerfile
+    depends_on:
+      - hub-db
+    restart: always
+    ports:
+      - "${HUB_SERVER_PORT}:${HUB_SERVER_PORT}"
+    networks:
+      - external-network
+    environment:
+
+      # hub 관련
+      HUB_SERVER_PORT: ${HUB_SERVER_PORT}
+      HUB_SERVER_CONTAINER_NAME: ${HUB_SERVER_CONTAINER_NAME}
+
+      # datasource 관련
+      HUB_SERVER_DB_CONTAINER_NAME: ${HUB_SERVER_DB_CONTAINER_NAME}
+      HUB_SERVER_DB_PORT: ${HUB_SERVER_DB_PORT}
+      HUB_SERVER_DB_NAME: ${HUB_SERVER_DB_NAME}
+      HUB_SERVER_DB_USERNAME: ${HUB_SERVER_DB_USERNAME}
+      HUB_SERVER_DB_PASSWORD: ${HUB_SERVER_DB_PASSWORD}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+
+      # 기타 환경 변수 관련
+      NAVER_SECRET_KEY: ${NAVER_SECRET_KEY}
+      NAVER_ACCESS_KEY: ${NAVER_ACCESS_KEY}
+      GOOGLE_MAP_KEY: ${GOOGLE_MAP_KEY}
+
+networks:
+  external-network:
+    external: true
+volumes:
+  postgres-data:

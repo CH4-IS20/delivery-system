@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  redis-db:
+    image: redis:7.4
+    container_name: redis-db
+    hostname: ${REDIS_HOST}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - internal-network
+      - external-network
+
+networks:
+  internal-network:
+    external: true
+  external-network:
+    external: true

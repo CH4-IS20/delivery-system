@@ -1,0 +1,51 @@
+services:
+  company-db:
+    image: bitnami/postgresql:16.4.0
+    container_name: company-db
+    environment:
+      POSTGRES_USER: ${COMPANY_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${COMPANY_SERVER_DB_NAME}
+      POSTGRESQL_PORT_NUMBER: ${COMPANY_SERVER_DB_PORT}
+    ports:
+      - "${COMPANY_SERVER_DB_PORT}:${COMPANY_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${COMPANY_SERVER_DB_VOLUMES}
+    networks:
+      - external-network
+
+  company-app:
+    container_name: company-app
+    build:
+      context: ../company
+      dockerfile: Dockerfile
+    depends_on:
+      - company-db
+    restart: always
+    ports:
+      - "${COMPANY_SERVER_PORT}:${COMPANY_SERVER_PORT}"
+    networks:
+      - external-network
+    environment:
+
+      # company 관련
+      COMPANY_SERVER_PORT: ${COMPANY_SERVER_PORT}
+      COMPANY_SERVER_CONTAINER_NAME: ${COMPANY_SERVER_CONTAINER_NAME}
+
+      # datasource 관련
+      COMPANY_SERVER_DB_CONTAINER_NAME: ${COMPANY_SERVER_DB_CONTAINER_NAME}
+      COMPANY_SERVER_DB_PORT: ${COMPANY_SERVER_DB_PORT}
+      COMPANY_SERVER_DB_NAME: ${COMPANY_SERVER_DB_NAME}
+      COMPANY_SERVER_DB_USERNAME: ${COMPANY_SERVER_DB_USERNAME}
+      COMPANY_SERVER_DB_PASSWORD: ${COMPANY_SERVER_DB_PASSWORD}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+
+networks:
+  external-network:
+    external: true
+
+volumes:
+  postgres-data:

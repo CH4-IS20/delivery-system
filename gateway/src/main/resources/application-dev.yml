@@ -6,36 +6,52 @@ spring:
       on-profile: dev
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
       routes:
         - id: user
-          uri: http://${USER_SERVER_HOST}:${USER_SERVER_PORT}
+          uri: lb://user
           predicates:
-            - Path=/api/users/**, /api/auth/**
+            - Path=/api/users/**, /api/auth/**, /users/v3/api-docs
 
         - id: company
-          uri: http://${COMPANY_SERVER_HOST}:${COMPANY_SERVER_PORT}
+          uri: lb://company
           predicates:
-            - Path=/api/companies/**, /api/products/**
+            - Path=/api/companies/**, /api/products/**, /companies/v3/api-docs
 
         - id: hub
-          uri: http://${HUB_SERVER_HOST}:${HUB_SERVER_HOST}
+          uri: lb://hub
           predicates:
-            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**
+            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**, /hubs/v3/api-docs
 
         - id: order
-          uri: http://${ORDER_SERVER_HOST}:${ORDER_SERVER_HOST}
+          uri: lb://order
           predicates:
-            - Path=/api/deliveries/**, /api/orders/**, /api/delivery-histories/**
+              - Path=/api/deliveries/**, /api/orders/**, /api/delivery-histories/**, /orders/v3/api-docs
 
 server:
   port: ${GATEWAY_SERVER_PORT}
 
+springdoc:
+  swagger-ui:
+#    use-root-path: true # 게이트웨이 들어오면 자동으로 swagger로 가짐
+    urls:
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/users/v3/api-docs
+        name: User
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/companies/v3/api-docs
+        name: Company
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/hubs/v3/api-docs
+        name: Hub
+      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/orders/v3/api-docs
+        name: Order
+
 eureka:
   instance:
-    hostname: ${GATEWAY_SERVER_HOST}
+    hostname: ${GATEWAY_SERVER_CONTAINER_NAME}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true
     fetch-registry: true
 

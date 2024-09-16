@@ -24,14 +24,9 @@ public class ProductDomainService {
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
 
-    public Product createProduct(ProductDto productDto) {
-        Company company = companyRepository.findById(productDto.companyId()).orElseThrow(
-                () -> new EntityNotFoundException("ID 에 해당하는 업체를 찾을 수 없습니다.")
-        );
-
+    public Product createProduct(ProductDto productDto, Company company) {
         return productRepository.save(productDto.toEntity(company));
     }
-
 
     public Product getProductById(UUID productId) {
         return productRepository.findById(productId).orElseThrow(
@@ -43,31 +38,21 @@ public class ProductDomainService {
         return productRepository.searchProducts(companyId, hubId, searchType, searchValue, pageable);
     }
 
-    public Product updateProduct(UUID productId, ProductDto productDto) {
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new EntityNotFoundException("ID 에 해당하는 상품을 찾을 수 없습니다.")
-        );
-
+    public Product updateProduct(Product product, Company company, ProductDto updatingDto) {
         // companyId 가 업데이트 될 때 존재하는 업체인지 확인
-        if (!productDto.companyId().equals(product.getCompany().getId())) {
-            Company company = companyRepository.findById(productDto.companyId()).orElseThrow(
-                    () -> new EntityNotFoundException("ID 에 해당하는 업체를 찾을 수 없습니다.")
-            );
+        if (!updatingDto.companyId().equals(company.getId())) {
             //있다면 업데이트
             product.setCompany(company);
         }
         //다른 필드 업데이트
-        product.setName(productDto.name());
-        product.setQuantity(productDto.quantity());
-        product.setHubId(productDto.hubId());
+        product.setName(updatingDto.name());
+        product.setQuantity(updatingDto.quantity());
+        product.setHubId(updatingDto.hubId());
 
         return productRepository.save(product);
     }
 
-    public void deleteProduct(UUID productId, String userId) {
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new EntityNotFoundException("ID 에 해당하는 상품을 찾을 수 없습니다.")
-        );
+    public void deleteProduct(Product product, String userId) {
         // Soft delete
         product.setDeletedAt(LocalDateTime.now());
         product.setDeletedBy(userId);

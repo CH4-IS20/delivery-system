@@ -16,14 +16,10 @@ public record OrderDto(
         UUID supplierId,  // 요청(공급) 업체
         UUID receiverId,     // 수령 업체 ID
         UUID productId,  // 상품 ID
-        UUID deliveryId,    // 배송 ID
         Integer quantity, // 주문 상품 수량
         LocalDateTime orderDate,  // 주문 일자 및 시간
         OrderStatus status,  // 주문 상태
-        DeliveryStatus deliveryStatus, // 배송 현황
-        String receiptAddress,  // 수령 업체 주소
-        String recipientName,   // 수령인 이름
-        String recipientSlack,  // 수령자 슬랭 아이디
+        DeliveryDto deliveryDto,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime updatedAt,
@@ -32,19 +28,6 @@ public record OrderDto(
         String deletedBy,
         Boolean isDeleted
 ) {
-    public Order toEntity() {
-        Order order = Order.builder()
-                .userId(userId)
-                .supplierId(supplierId)
-                .receiverId(receiverId)
-                .productId(productId)
-                .quantity(quantity)
-                .orderDate(orderDate)
-                .status(status)
-                .build();
-        order.setCreatedBy(createdBy);
-        return order;
-    }
 
     public static OrderDto from(Order entity) {
         return OrderDto.builder()
@@ -56,12 +39,14 @@ public record OrderDto(
                 .quantity(entity.getQuantity())
                 .orderDate(entity.getOrderDate())
                 .status(entity.getStatus())
+                .deliveryDto(DeliveryDto.from(entity.getDelivery()))
+                .createdAt(entity.getCreatedAt())
+                .createdBy(entity.getCreatedBy())
+                .updatedAt(entity.getUpdatedAt())
+                .updatedBy(entity.getUpdatedBy())
+                .deletedAt(entity.getDeletedAt())
+                .deletedBy(entity.getDeletedBy())
                 .isDeleted(entity.getIsDeleted())
-                .deliveryId(entity.getDelivery().getId())
-                .deliveryStatus(entity.getDelivery().getStatus())
-                .receiptAddress(entity.getDelivery().getDeliveryAddress())
-                .recipientName(entity.getDelivery().getRecipient())
-                .recipientSlack(entity.getDelivery().getRecipientSlack())
                 .build();
     }
 }

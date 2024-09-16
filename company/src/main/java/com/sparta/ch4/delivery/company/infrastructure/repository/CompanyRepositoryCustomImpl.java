@@ -4,7 +4,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.company.domain.model.Company;
 import com.sparta.ch4.delivery.company.domain.model.QCompany;
-import com.sparta.ch4.delivery.company.domain.repository.CompanyRepositoryCustom;
 import com.sparta.ch4.delivery.company.domain.type.CompanySearchType;
 import com.sparta.ch4.delivery.company.domain.type.CompanyType;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class CompanyRepositoryCustomImpl implements CompanyRepositoryCustom {
     QCompany company = QCompany.company;
 
     @Override
-    public Page<Company> searchCompany(CompanySearchType searchType, String searchValue, Pageable pageable) {
+    public Page<Company> searchCompanies(CompanySearchType searchType, String searchValue, Pageable pageable) {
 
         List<Company> companies = queryFactory
                 .selectFrom(company)

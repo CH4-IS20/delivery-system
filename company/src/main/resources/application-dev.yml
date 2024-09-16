@@ -4,7 +4,13 @@ spring:
   config:
     activate:
       on-profile: dev
-  #docker에서 DB 환경변수를 넣어주기
+
+  datasource:
+    url: jdbc:postgresql://${COMPANY_SERVER_DB_CONTAINER_NAME}:${COMPANY_SERVER_DB_PORT}/${COMPANY_SERVER_DB_NAME}
+    username: ${COMPANY_SERVER_DB_USERNAME}
+    password: ${COMPANY_SERVER_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -15,11 +21,19 @@ spring:
 server:
   port: ${COMPANY_SERVER_PORT}
 
+springdoc:
+  api-docs:
+    path: /companies/v3/api-docs
+  swagger-ui:
+    path: /companies/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
 eureka:
   instance:
-    hostname: ${COMPANY_SERVER_HOST}
+    hostname: ${COMPANY_SERVER_CONTAINER_NAME}
   client:
     service-url:
-      defaultZone: "${EUREKA_SERVER_URL}"
+      defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true  # Eureka 서버에 등록
     fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기

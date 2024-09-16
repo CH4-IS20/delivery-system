@@ -1,0 +1,50 @@
+services:
+  order-db:
+    image: bitnami/postgresql:16.4.0
+    container_name: order-db
+    environment:
+      POSTGRES_USER: ${ORDER_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${ORDER_SERVER_DB_PASSWORD}
+      POSTGRES_DB: ${ORDER_SERVER_DB_NAME}
+      POSTGRESQL_PORT_NUMBER: ${ORDER_SERVER_DB_PORT}
+    ports:
+      - "${ORDER_SERVER_DB_PORT}:${ORDER_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${ORDER_SERVER_DB_VOLUMES}
+    networks:
+      - external-network
+
+  order-app:
+    container_name: order-app
+    build:
+      context: ../order
+      dockerfile: Dockerfile
+    depends_on:
+      - order-db
+    restart: always
+    ports:
+      - "${ORDER_SERVER_PORT}:${ORDER_SERVER_PORT}"
+    networks:
+      - external-network
+    environment:
+
+      # order 관련
+      ORDER_SERVER_PORT: ${ORDER_SERVER_PORT}
+      ORDER_SERVER_CONTAINER_NAME: ${ORDER_SERVER_CONTAINER_NAME}
+
+      # datasource 관련
+      ORDER_SERVER_DB_CONTAINER_NAME: ${ORDER_SERVER_DB_CONTAINER_NAME}
+      ORDER_SERVER_DB_PORT: ${ORDER_SERVER_DB_PORT}
+      ORDER_SERVER_DB_NAME: ${ORDER_SERVER_DB_NAME}
+      ORDER_SERVER_DB_USERNAME: ${ORDER_SERVER_DB_USERNAME}
+      ORDER_SERVER_DB_PASSWORD: ${ORDER_SERVER_DB_PASSWORD}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+
+networks:
+  external-network:
+    external: true
+volumes:
+  postgres-data:
