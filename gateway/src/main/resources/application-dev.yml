@@ -20,7 +20,7 @@ spring:
         - id: hub
           uri: lb://hub
           predicates:
-            - Path=/api/hubs/**, /api/hub-routes/**, Path=/api/delivery-managers/**, /hubs/v3/api-docs
+            - Path=/api/hubs/**, /api/hub-routes/**, /api/delivery-managers/**, /hubs/v3/api-docs
 
         - id: order
           uri: lb://order
