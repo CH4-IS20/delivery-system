@@ -1,17 +1,17 @@
 services:
   user-db:
-    image: postgres:16.4
+    image: bitnami/postgresql:16.4.0
     container_name: user-db
     environment:
-      POSTGRES_USER: ${USER_SERVER_DB_USERNAME}
+      POSTGRES_USERNAME: ${USER_SERVER_DB_USERNAME}
       POSTGRES_PASSWORD: ${USER_SERVER_DB_PASSWORD}
-      POSTGRES_DB: ${USER_SERVER_DB_NAME}
+      POSTGRES_DATABASE: ${USER_SERVER_DB_NAME}
     ports:
       - "${USER_SERVER_DB_PORT}:${USER_SERVER_DB_PORT}"
     volumes:
       - postgres-data:${USER_SERVER_DB_VOLUMES}
     networks:
-      - service-network
+      - external-network
 
   user-app:
     container_name: user-app
@@ -24,22 +24,35 @@ services:
     ports:
       - "${USER_SERVER_PORT}:${USER_SERVER_PORT}"
     networks:
-      - service-network
+      - external-network # 임시로 외부 네트워크 설정
     environment:
-      SPRING_DATASOURCE_URL: ${USER_SERVER_DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${USER_SERVER_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${USER_SERVER_DB_PASSWORD}
+
+      # user 관련
+      USER_SERVER_CONTAINER_NAME: ${USER_SERVER_CONTAINER_NAME}
       USER_SERVER_PORT: ${USER_SERVER_PORT}
-      USER_SERVER_HOST: ${USER_SERVER_HOST}
-      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
-      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT:  ${EUREKA_SERVER_PORT}
+
+      # gateway 관련
       GATEWAY_SERVER_HOST: ${GATEWAY_SERVER_HOST}
       GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
 
+      # datasource 관련
+      USER_SERVER_DB_CONTAINER_NAME: ${USER_SERVER_DB_CONTAINER_NAME}
+      USER_SERVER_DB_USERNAME: ${USER_SERVER_DB_USERNAME}
+      USER_SERVER_DB_NAME: ${USER_SERVER_DB_NAME}
+      USER_SERVER_DB_PASSWORD: ${USER_SERVER_DB_PASSWORD}
+      USER_SERVER_DB_PORT: ${USER_SERVER_DB_PORT}
+
+      # 기타 환경 변수 관련
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+
 networks:
-  service-network:
+  external-network:
     external: true
 
 volumes:
