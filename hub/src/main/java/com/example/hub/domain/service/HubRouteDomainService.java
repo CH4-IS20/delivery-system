@@ -43,7 +43,7 @@ public class HubRouteDomainService {
 
     private final RestTemplate restTemplate;
 
-    
+
     // 네이버 시간, 거리 계산
     public double[] naverDirections(String start, String goal){
 
@@ -60,16 +60,24 @@ public class HubRouteDomainService {
 
         log.info(naverResponse.toString());
 
-        double distance = naverResponse.getRoute().getTrafast()[0].getSummary().getDistance()/1000;     // m -> km
-        double duration = naverResponse.getRoute().getTrafast()[0].getSummary().getDuration()/1000;     // m/s -> s
+        double temp[] = new double[2];
 
-        double temp[] = {distance,duration};
+        if(naverResponse.getRoute() == null){
+            temp[0] = 0;
+            temp[1] = 0;
+        }else{
+            double distance = naverResponse.getRoute().getTrafast()[0].getSummary().getDistance()/1000;     // m -> km
+            double duration = naverResponse.getRoute().getTrafast()[0].getSummary().getDuration()/1000;     // m/s -> s
+
+            temp[0] = distance;
+            temp[1] = duration;
+        }
 
         return temp;
     }
 
 
-    
+
     public List<HubRouteResponse> createHubRoute() {
         // 마스터만 접근 가능
 //        if(!role.equals(UserRole.MASTER)){
@@ -84,7 +92,7 @@ public class HubRouteDomainService {
             3. 나머지 hub들을 도착지 허브로 하여 자식 엔티티로 구성하여 저장시킴
             4. 이를 list size 만큼 반복함(이때, i를 1씩 증가시켜 중복되는 값을 제거함)
          */
-                
+
         for(int i=0; i<hubList.size(); i++){
             Hub hub = hubList.get(i);
             HubRoute hubRoute = HubRoute.fromHub(hub);      // 기준 시작 hub 생성
@@ -94,7 +102,7 @@ public class HubRouteDomainService {
 
                 // naver map API 사용하여 거리, 시간 구함
                 temp = naverDirections(hub.getLongitude()+","+hub.getLatitude(),hubList.get(j).getLongitude()+","+hubList.get(j).getLatitude());
-                
+
                 EndHubRouteDto dto = EndHubRouteDto.from(hubList.get(j),temp[0],temp[1]);
                 HubRoute childEndHubRoute = EndHubRouteDto.to(dto,hubRoute);             // Dto -> HubRoute(자식 Entity)
                 hubRoute.addEndHubId(childEndHubRoute);                 // 기준 시작 hub에 자식 HubRoute 추가

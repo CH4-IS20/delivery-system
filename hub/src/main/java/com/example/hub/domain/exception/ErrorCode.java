@@ -9,8 +9,13 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾지 못하였습니다."),
     HUB_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 허브를 찾지 못하였습니다."),
+    HUBROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 허브경로를 찾지 못하였습니다."),
+
+
     DELIVERYMANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송담당자를 찾지 못하였습니다."),
     DELIVERYMANAGER_DUPLICATED(HttpStatus.CONFLICT, "해당 배송담당자는 이미 다른 허브에 배정되었습니다"),
+    INPUT_HUBNAME(HttpStatus.BAD_REQUEST, "업체 배송 담당자는 업체의 정보를 필수로 입력해주셔야 합니다"),
+    NO_DELIVERYMANAGER(HttpStatus.NOT_FOUND, "배송 가능한 담당자가 없습니다"),
 
     DUPLICATED_HUBNAME(HttpStatus.CONFLICT, "이미 해당 허브가 존재합니다."),
 

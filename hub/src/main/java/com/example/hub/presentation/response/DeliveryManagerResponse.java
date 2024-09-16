@@ -19,7 +19,7 @@ public record DeliveryManagerResponse(
         return DeliveryManagerResponse.builder()
                 .userId(manager.getId())
                 .name(manager.getName())
-                .hubId(manager.getHub().getId())
+                .hubId(manager.getHub() != null ? manager.getHub().getId() : null)
                 .slackId(manager.getSlackId())
                 .type(manager.getType())
                 .build();
