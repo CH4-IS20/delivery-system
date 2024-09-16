@@ -1,17 +1,14 @@
 package com.sparta.ch4.delivery.company.presentation.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-//@SecurityScheme(
-//        name = "bearerAuth",
-//        type = SecuritySchemeType.HTTP,
-//        bearerFormat = "JWT",
-//        scheme = "bearer"
-//)
 public class SwaggerConfig {
 
     @Bean
@@ -23,6 +20,15 @@ public class SwaggerConfig {
 
 
         return new OpenAPI()
+                .components(new Components().addSecuritySchemes("Bearer",
+                        new io.swagger.v3.oas.models.security.SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .in(SecurityScheme.In.HEADER)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")))
+                .addSecurityItem(new io.swagger.v3.oas.models.security.SecurityRequirement()
+                        .addList("Bearer"))
+                .addServersItem(new Server().url("/"))
                 .info(info);
     }
 }

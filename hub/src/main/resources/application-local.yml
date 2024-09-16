@@ -5,13 +5,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: ${HUB_SERVER_DB_URL}
-    username: ${HUB_SERVER_DB_USERNAME}
-    password: ${HUB_SERVER_DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-#    driver-class-name: org.h2.Driver
-#    url: 'jdbc:h2:mem:test'
-#    username: sa
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:test'
+    username: sa
   h2:
     console:
       enabled: true
@@ -27,6 +23,10 @@ springdoc:
     path: /hubs/v3/api-docs
   swagger-ui:
     path: /hubs/swagger-ui.html
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
 
 eureka:
   instance:

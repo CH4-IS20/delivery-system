@@ -20,9 +20,13 @@ server:
 
 springdoc:
   api-docs:
+    enabled: true
     path: /companies/v3/api-docs
   swagger-ui:
     path: /companies/swagger-ui.html
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 
 eureka:
   instance:
