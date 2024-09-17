@@ -86,6 +86,7 @@ public class PolicyService {
         policies.put("/api/policies/update", Map.of("GET", "ROLE_MASTER"));
         // 정책을 Redis에 저장하며 1일 동안 캐시 유지
         policies.forEach((endpoint, methodRoles) -> policyCache.put(endpoint, methodRoles, 1,
+                TimeUnit.DAYS, 1,
                 TimeUnit.DAYS));
     }
 
