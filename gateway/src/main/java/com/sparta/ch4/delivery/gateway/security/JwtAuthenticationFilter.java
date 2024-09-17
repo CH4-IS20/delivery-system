@@ -51,8 +51,12 @@ public class JwtAuthenticationFilter implements WebFilter {
 
             String userId = claims.getSubject();
             String role = claims.get("role", String.class);
+
             // X-UserId 헤더 추가
             ServerHttpRequest modifiedRequest = addUserIdHeader(exchange.getRequest(), userId);
+
+            // X-Role 헤더 추가
+            modifiedRequest = addRoleHeader(modifiedRequest, role);
 
             // role로 Authentication 객체 생성
             Authentication authentication = createAuthenticationFromRole(userId, role);
@@ -81,6 +85,13 @@ public class JwtAuthenticationFilter implements WebFilter {
         final String USER_ID_HEADER = "X-UserId";
         return request.mutate()
                 .header(USER_ID_HEADER, userId)
+                .build();
+    }
+
+    private ServerHttpRequest addRoleHeader(ServerHttpRequest request, String role) {
+        final String X_ROLE_HEADER = "X-Role";
+        return request.mutate()
+                .header(X_ROLE_HEADER, role)
                 .build();
     }
 
