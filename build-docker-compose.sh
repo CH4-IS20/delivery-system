@@ -10,12 +10,12 @@ COMPOSE_DIR="./docker"
 
 COMPOSE_FILES=(
     "docker-compose.eureka.yml"
-    "docker-compose.gateway.yml"
     "docker-compose.cache.yml"
     "docker-compose.company.yml"
     "docker-compose.order.yml"
     "docker-compose.user.yml"
     "docker-compose.hub.yml"
+    "docker-compose.gateway.yml"
 )
 
 # Docker Compose 파일을 순차적으로 빌드하고 실행
