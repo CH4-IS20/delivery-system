@@ -3,6 +3,7 @@ package com.sparta.ch4.delivery.order.application.service;
 import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderCreateDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
+import com.sparta.ch4.delivery.order.domain.exception.ApplicationException;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
 import com.sparta.ch4.delivery.order.domain.model.Order;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.COMPANY_CLIENT_ERROR;
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.PRODUCT_INVALID_ARGUMENT;
 
 
 @Slf4j
@@ -60,11 +64,9 @@ public class OrderService {
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
 
             // 3. 수령업체 정보를 통해 [최종 배송지 및 수령업체 유저 정보] 요청
-
             CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(orderCreatDto.receiverId());
-            if (companyResponse.getData() == null) {
-                // TODO: 커스텀 에러 정의
-                throw new IllegalArgumentException("ID 에 해당하는 업체를 찾을 수 없습니다.");
+            if (companyResponse.getData() == null & companyResponse.getStatus() != 200) {
+                throw new ApplicationException(COMPANY_CLIENT_ERROR);
             }
 
             //주문 관련 객체 프로세스 : 주문 생성 -> 배송 생성 -> 배송 기록 생성
@@ -82,7 +84,7 @@ public class OrderService {
             );
 
             return OrderDto.from(order);
-        } catch (RuntimeException e) {
+        } catch (ApplicationException e) {
             // 감소된 재고 복구 api call
             productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
             log.error("주문 생성 실패: ", e);
@@ -109,7 +111,7 @@ public class OrderService {
         // 1. order 조회
         Order order = orderDomainService.getOrderById(orderId);
         if (!order.getProductId().equals(dto.productId())) {
-            throw new IllegalArgumentException("ProductId 가 일치하지 않음");
+            throw new ApplicationException(PRODUCT_INVALID_ARGUMENT);
         }
         // 2. product 재고 콜 -> 줄었는지 늘었는지 체크
         if (order.getQuantity() < dto.quantity()) { //기존 주문보다 늘었다면 차이만큼만 재고 Down 요청
