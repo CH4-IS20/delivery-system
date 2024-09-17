@@ -47,3 +47,9 @@ eureka:
       defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true  # Eureka 서버에 등록
     fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
+
+gemini:
+  baseurl: https://generativelanguage.googleapis.com
+googleai:
+  api:
+    key: ${GOOGLE_API_KEY}

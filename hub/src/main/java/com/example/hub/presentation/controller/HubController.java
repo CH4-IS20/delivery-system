@@ -4,6 +4,7 @@ import com.example.hub.application.service.HubService;
 import com.example.hub.presentation.request.HubCreateRequest;
 import com.example.hub.presentation.response.CommonResponse;
 import com.example.hub.presentation.response.HubResponse;
+import com.example.hub.presentation.response.HubRouteForOrderResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,7 +34,7 @@ public class HubController {
         // TODO :: Response로 감싸주고, UserId를 Header에서 X-UserId를 통해 받아오는 코드 수정 예정
         return CommonResponse.success(hubService.createHub(request));
     }
-    
+
     // 허브 조회
     @GetMapping("/{hubId}")
     @Operation(summary = "허브 세부 조회", description = "특정 허브에 대한 세부 조회")
@@ -40,7 +42,7 @@ public class HubController {
         // TODO :: Response로 감싸주는 코드 추가
         return CommonResponse.success(hubService.getHub(id));
     }
-    
+
     // 허브 검색 전체 조회
     // 검색은 허브이름을 통해 가능
     @GetMapping
@@ -75,4 +77,13 @@ public class HubController {
         return CommonResponse.success(id+"허브에 해당하는 데이터가 삭제되었습니다");
     }
 
+    // Order에서 주문받아옴
+    @GetMapping("/order")
+    public CommonResponse<List<HubRouteForOrderResponse>> getHubRouteForOrder(
+            @RequestParam(name = "supplierId") String supplierId,
+            @RequestParam(name = "receiverId") String receiverId,
+            @RequestHeader(value = "X-User-Id", required = true) String userId
+    ){
+        return CommonResponse.success(hubService.getHubRouteForOrder(supplierId,receiverId,userId));
+    }
 }

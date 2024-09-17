@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
+
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -34,6 +36,8 @@ public class Hub extends BaseEntity {
     private double latitude;
     private double longitude;
 
+    @OneToMany(mappedBy = "hub" , cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<DeliveryManager> deliveryManagers;
 
     public void update(HubCreateRequest request, String address, double lat, double lon) {
         this.name = request.name();

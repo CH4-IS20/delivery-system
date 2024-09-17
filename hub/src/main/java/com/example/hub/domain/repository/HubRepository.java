@@ -1,6 +1,7 @@
 package com.example.hub.domain.repository;
 
 import com.example.hub.domain.model.Hub;
+import com.example.hub.domain.model.HubRoute;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,7 @@ public interface HubRepository extends JpaRepository<Hub, UUID>,HubRepositoryCus
     void delete(@Param("hubId") UUID hubId, @Param("deletedAt")LocalDateTime deletedAt);
 
     Optional<Hub> findByName(String name);
+
+    @Query("SELECT h FROM Hub h JOIN h.deliveryManagers d WHERE h.name = :startHubName AND d.status = false ")
+    Optional<Hub> findByNameDelivery(@Param("startHubName") String startHubName);
 }
