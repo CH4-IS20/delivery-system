@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 프로젝트 디렉터리 배열
-PROJECTS=( "company" "eureka" "gateway" "hub" "order" "user" )
+PROJECTS=( "company" "eureka" "gateway" "hub" "order" "user" "policy")
 
 # 각 프로젝트 디렉터리로 이동하여 gradlew clean build -x test 실행
 for project in "${PROJECTS[@]}"; do

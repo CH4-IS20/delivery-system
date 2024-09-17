@@ -6,16 +6,16 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "${POLICY_SERVER_HOST}:${POLICY_SERVER_PORT}"
+      - "${POLICY_SERVER_PORT}:${POLICY_SERVER_PORT}"
     networks:
-      - service-network
+      - external-network
     environment:
       POLICY_SERVER_PORT: ${POLICY_SERVER_PORT}
       POLICY_SERVER_HOST: ${POLICY_SERVER_HOST}
-      REDIS_HOST: ${REDIS_HOST}
+      REDIS_HOST: ${REDIS_CONTAINER_NAME}
       REDIS_PORT: ${REDIS_PORT}
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
 
 networks:
-  service-network:
+  external-network:
     external: true

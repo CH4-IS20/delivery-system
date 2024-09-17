@@ -83,6 +83,7 @@ public class PolicyService {
         policies.put("/api/hub-routes/{id}",
                 Map.of("GET", "authenticated", "PUT", "ROLE_MASTER", "DELETE", "ROLE_MASTER"));
 
+        policies.put("/api/policies/update", Map.of("GET", "ROLE_MASTER"));
         // 정책을 Redis에 저장하며 1일 동안 캐시 유지
         policies.forEach((endpoint, methodRoles) -> policyCache.put(endpoint, methodRoles, 1,
                 TimeUnit.DAYS));
