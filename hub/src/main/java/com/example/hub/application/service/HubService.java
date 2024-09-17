@@ -1,14 +1,18 @@
 package com.example.hub.application.service;
 
+import com.example.hub.domain.service.BestRouteDomainService;
+import com.example.hub.domain.service.DeliveryManagerDomainService;
 import com.example.hub.domain.service.HubDomainService;
 import com.example.hub.presentation.request.HubCreateRequest;
 import com.example.hub.presentation.response.HubResponse;
+import com.example.hub.presentation.response.HubRouteForOrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,6 +20,7 @@ import java.util.UUID;
 public class HubService {
 
     private final HubDomainService hubDomainService;
+    private final BestRouteDomainService bestRouteDomainService;
 
     // 허브 생성
     @Transactional
@@ -45,5 +50,10 @@ public class HubService {
     @Transactional
     public void deleteHub(UUID id) {
         hubDomainService.deleteHub(id);
+    }
+
+    // Order에 따른
+    public List<HubRouteForOrderResponse> getHubRouteForOrder(String supplierId, String receiverId, String userId) {
+        return bestRouteDomainService.getHubRouteForOrder(supplierId,receiverId,userId);
     }
 }

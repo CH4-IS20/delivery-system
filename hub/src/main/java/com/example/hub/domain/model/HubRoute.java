@@ -28,10 +28,12 @@ public class HubRoute extends BaseEntity {
     private UUID id;
 
     private UUID startHubId;
+    private String startHubName;
     private UUID endHubId;
+    private String endHubName;
 
     private double distance;            // 현재 허브로부터 거리
-    
+
     private double durationTime;     // 현재 허브로부터 이동 시간
 
     @JsonBackReference // 부모 카테고리의 순환 참조 방지
@@ -49,12 +51,13 @@ public class HubRoute extends BaseEntity {
     public static HubRoute fromHub(Hub hub) {
         return HubRoute.builder()
                 .startHubId(hub.getId())
+                .startHubName(hub.getName())
                 .parent(null)
                 .distance(0)
                 .durationTime(0)
                 .build();
     }
-    
+
     // 자식 허브 추가
     public void addEndHubId(HubRoute endHubRoute) {
         if(endHub == null){
