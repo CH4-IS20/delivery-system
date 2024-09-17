@@ -35,15 +35,15 @@ server:
 
 springdoc:
   swagger-ui:
-#    use-root-path: true # 게이트웨이 들어오면 자동으로 swagger로 가짐
+    use-root-path: true # 게이트웨이 들어오면 자동으로 swagger로 가짐
     urls:
-      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/users/v3/api-docs
+      - url: http://${GATEWAY_SERVER_HOST}:${GATEWAY_SERVER_PORT}/users/v3/api-docs
         name: User
-      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/companies/v3/api-docs
+      - url: http://${GATEWAY_SERVER_HOST}:${GATEWAY_SERVER_PORT}/companies/v3/api-docs
         name: Company
-      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/hubs/v3/api-docs
+      - url: http://${GATEWAY_SERVER_HOST}:${GATEWAY_SERVER_PORT}/hubs/v3/api-docs
         name: Hub
-      - url: http://${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}/orders/v3/api-docs
+      - url: http://${GATEWAY_SERVER_HOST}:${GATEWAY_SERVER_PORT}/orders/v3/api-docs
         name: Order
 
 eureka:
@@ -54,6 +54,19 @@ eureka:
       defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, info, metrics
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_CONTAINER_NAME}:${ZIPKIN_PORT}/api/v2/spans
+  tracing:
+    sampling:
+      probability: 0.1
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
