@@ -1,10 +1,12 @@
 package com.sparta.ch4.delivery.gateway.security;
 
+import com.sparta.ch4.delivery.gateway.response.ResponseWriter;
 import jakarta.annotation.Nonnull;
 import java.util.Map;
 import org.redisson.api.RMapCacheReactive;
 import org.redisson.api.RedissonReactiveClient;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
@@ -19,10 +21,14 @@ public class RoleAuthorizationFilter implements WebFilter {
 
     private final RedissonReactiveClient redissonClient;
 
+    private final ResponseWriter responseWriter;
+
     private static final String POLICY_CACHE_KEY = "endpointPolicyCache";
 
-    public RoleAuthorizationFilter(RedissonReactiveClient redissonClient) {
+    public RoleAuthorizationFilter(RedissonReactiveClient redissonClient,
+            ResponseWriter responseWriter) {
         this.redissonClient = redissonClient;
+        this.responseWriter = responseWriter;
     }
 
     @Override
@@ -49,43 +55,42 @@ public class RoleAuthorizationFilter implements WebFilter {
                                 .flatMap(policy -> {
                                     // 정책이 없으면 접근이 금지됨 (403 Forbidden)
                                     if (policy == null) {
-                                        exchange.getResponse().setStatusCode(
-                                                org.springframework.http.HttpStatus.FORBIDDEN);
-                                        return exchange.getResponse().setComplete();
+                                        return responseWriter.writeResponse(exchange, HttpStatus.FORBIDDEN,
+                                                "정책이 설정되지 않았습니다.");
                                     }
 
-                                    // 인증 정보가 없거나 인증되지 않은 사용자인 경우 접근이 금지됨 (401 Unauthorized)
+                                    // 인증 정보가 없거나 인증되지 않은 사용자인 경우 접근 금지 (401 Unauthorized)
                                     if (authentication == null
                                             || !authentication.isAuthenticated()) {
-                                        exchange.getResponse().setStatusCode(
-                                                org.springframework.http.HttpStatus.UNAUTHORIZED);
-                                        return exchange.getResponse().setComplete();
+                                        return responseWriter.writeResponse(exchange, HttpStatus.UNAUTHORIZED,
+                                                "인증이 필요합니다.");
                                     }
 
-                                    // 정책이 "authenticated"로 설정된 경우 인증된 사용자만 통과
+                                    // 정책이 "authenticated"인 경우 인증된 사용자만 통과 허용
                                     if (policy.equals("authenticated")) {
                                         return chain.filter(exchange);
                                     }
 
-                                    // 인증된 사용자의 권한 중 하나가 정책에 맞는지 확인
+                                    // 사용자의 권한 중 하나가 정책과 일치하는지 확인
                                     boolean hasAccess = authentication.getAuthorities().stream()
                                             .anyMatch(grantedAuthority -> policy.contains(
                                                     grantedAuthority.getAuthority()));
 
-                                    // 권한이 맞지 않으면 접근이 금지됨 (403 Forbidden)
+                                    // 사용자 권한이 정책과 일치하지 않으면 접근 금지 (403 Forbidden)
                                     if (!hasAccess) {
-                                        exchange.getResponse().setStatusCode(
-                                                org.springframework.http.HttpStatus.FORBIDDEN);
-                                        return exchange.getResponse().setComplete();
+                                        return responseWriter.writeResponse(exchange, HttpStatus.FORBIDDEN,
+                                                "권한이 부족합니다.");
                                     }
 
+                                    // 권한이 맞으면 필터 체인 계속 진행
                                     return chain.filter(exchange);
-                                })
-                );
+                                }));
+
     }
 
     public Mono<String> getPolicyWithRegex(String path, String method) {
-        RMapCacheReactive<String, Map<String, String>> policyCache = redissonClient.getMapCache(POLICY_CACHE_KEY);
+        RMapCacheReactive<String, Map<String, String>> policyCache = redissonClient.getMapCache(
+                POLICY_CACHE_KEY);
 
         // 다양한 경로 변수들을 처리할 수 있는 정규식을 사용하여 경로 일반화 (e.g. /api/users/1 -> /api/users/{id})
         String normalizedPath = path.replaceAll("/\\d+$", "/{id}");
