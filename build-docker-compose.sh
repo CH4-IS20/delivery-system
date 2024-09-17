@@ -11,7 +11,6 @@ COMPOSE_DIR="./docker"
 COMPOSE_FILES=(
     "docker-compose.eureka.yml"
     "docker-compose.cache.yml"
-    "docker-compose.eureka.yml"
     "docker-compose.policy.yml"
     "docker-compose.company.yml"
     "docker-compose.order.yml"
