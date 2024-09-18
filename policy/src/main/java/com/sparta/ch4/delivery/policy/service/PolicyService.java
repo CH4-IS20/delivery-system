@@ -84,14 +84,19 @@ public class PolicyService {
                 Map.of("GET", "authenticated", "PUT", "ROLE_MASTER", "DELETE", "ROLE_MASTER"));
 
         policies.put("/api/policies/update", Map.of("GET", "ROLE_MASTER"));
+
+        // 기존 캐시 데이터를 초기화
+        policyCache.clear();
+
         // 정책을 Redis에 저장하며 1일 동안 캐시 유지
-        policies.forEach((endpoint, methodRoles) -> policyCache.put(endpoint, methodRoles, 0,
-                TimeUnit.DAYS, 0,
+        // FIXME: 실제로는 1일 동안 저장되지 않고 사라집니다. 따라서 cron을 10분 간격으로 설정합니다.
+        policies.forEach((endpoint, methodRoles) -> policyCache.put(endpoint, methodRoles, 1,
+                TimeUnit.DAYS, 1,
                 TimeUnit.DAYS));
     }
 
     // 매 자정에 권한 정책을 갱신하는 스케줄러
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정 실행
+    @Scheduled(cron = "0 */10 * * * ?") // 매 10분마다 실행
     public void refreshPolicies() {
         initPolicies(); // 정책을 다시 초기화하여 갱신
     }
