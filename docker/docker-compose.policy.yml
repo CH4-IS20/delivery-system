@@ -1,0 +1,21 @@
+services:
+  policy-app:
+    container_name: policy-app
+    build:
+      context: ../policy
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "${POLICY_SERVER_PORT}:${POLICY_SERVER_PORT}"
+    networks:
+      - external-network
+    environment:
+      POLICY_SERVER_PORT: ${POLICY_SERVER_PORT}
+      POLICY_SERVER_HOST: ${POLICY_SERVER_HOST}
+      REDIS_HOST: ${REDIS_CONTAINER_NAME}
+      REDIS_PORT: ${REDIS_PORT}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+
+networks:
+  external-network:
+    external: true

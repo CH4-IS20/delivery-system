@@ -1,11 +1,14 @@
 package com.sparta.ch4.delivery.gateway.security;
 
+import com.sparta.ch4.delivery.gateway.response.ResponseWriter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.Nonnull;
 import java.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +26,17 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@Order(0)
 public class JwtAuthenticationFilter implements WebFilter {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
+
+    private final ResponseWriter responseWriter;
+
+    public JwtAuthenticationFilter(ResponseWriter responseWriter) {
+        this.responseWriter = responseWriter;
+    }
 
     @Override
     public @Nonnull Mono<Void> filter(ServerWebExchange exchange, @Nonnull WebFilterChain chain) {
@@ -46,7 +56,7 @@ public class JwtAuthenticationFilter implements WebFilter {
             try {
                 claims = verifyJwtToken(token, secretKey);
             } catch (Exception e) {
-                return Mono.error(new RuntimeException("유효하지 않은 JWT 토큰입니다."));
+                return responseWriter.writeResponse(exchange, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
             }
 
             String userId = claims.getSubject();
