@@ -18,8 +18,8 @@ public class HubRoutService {
     private final HubRouteDomainService hubRouteDomainService;
 
     @Transactional
-    public List<HubRouteResponse> createHubRoute() {
-        return hubRouteDomainService.createHubRoute();
+    public List<HubRouteResponse> createHubRoute(String userId) {
+        return hubRouteDomainService.createHubRoute(userId);
     }
 
     @Transactional(readOnly = true)
@@ -28,7 +28,7 @@ public class HubRoutService {
     }
 
     @Transactional
-    public void deleteHubRoute(UUID startHubId) {
-        hubRouteDomainService.deleteHubRoute(startHubId);
+    public void deleteHubRoute(UUID startHubId,String userId) {
+        hubRouteDomainService.deleteHubRoute(startHubId,userId);
     }
 }
