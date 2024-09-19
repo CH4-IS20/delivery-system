@@ -1,28 +1,27 @@
 global:
-  scrape_interval: 15s  # How often to scrape targets (default is every 15 seconds)
-  evaluation_interval: 15s  # How often to evaluate rules (default is every 15 seconds)
+  scrape_interval: 15s
+  evaluation_interval: 15s
   external_labels:
     monitor: 'delivery-monitor'
 
 scrape_configs:
-  # Scrape Prometheus' own metrics
   - job_name: 'prometheus'
     static_configs:
-      - targets: [ 'localhost:9090' ]  # Prometheus itself is running on port 9090
+      - targets: [ '${PROMETHEUS_HOST}:${PROMETHEUS_PORT}' ]
 
-  # Example scrape configuration for a Docker-based service
   - job_name: 'docker-services'
     static_configs:
       - targets:
-          - 'gateway-app:18080'  # Gateway app container
-          - 'order-app:19094'    # Order app container
-          - 'user-app:19091'     # User app container
-          - 'hub-app:19093'      # Hub app container
-          - 'company-app:19092'      # Company app container
-          - 'eureka-app:19090'      # Eureka app container
+          - '${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}'  # Gateway app container
+          - '${ORDER_SERVER_CONTAINER_NAME}:${ORDER_SERVER_PORT}'    # Order app container
+          - '${USER_SERVER_CONTAINER_NAME}:${USER_SERVER_PORT}'     # User app container
+          - '${HUB_SERVER_CONTAINER_NAME}:${HUB_SERVER_PORT}'      # Hub app container
+          - '${COMPANY_SERVER_CONTAINER_NAME}:${COMPANY_SERVER_PORT}'      # Company app container
+          - '${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}'      # Eureka app container
+          - '${POLICY_SERVER_CONTAINER_NAME}:${POLICY_SERVER_PORT}'      # Policy app container
 
   - job_name: 'monitor-services'
     static_configs:
       - targets:
-          - 'zipkin:9411'
-          - 'grafana:3000'
+          - '${ZIPKIN_CONTAINER_NAME}:${ZIPKIN_PORT}'
+          - '${GRAFANA_CONTAINER_NAME}:${GRAFANA_PORT}'
