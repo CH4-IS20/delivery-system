@@ -22,9 +22,8 @@ services:
     depends_on:
       - hub-db
     restart: always
-    ports:
-      - "${HUB_SERVER_PORT}:${HUB_SERVER_PORT}"
     networks:
+      - external-network
       - internal-network
     environment:
 
@@ -50,6 +49,8 @@ services:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
 
 networks:
+  external-network:
+    external: true
   internal-network:
     external: true
 volumes:

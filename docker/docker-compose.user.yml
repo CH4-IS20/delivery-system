@@ -22,10 +22,9 @@ services:
     depends_on:
       - user-db
     restart: always
-    ports:
-      - "${USER_SERVER_PORT}:${USER_SERVER_PORT}"
     networks:
       - internal-network
+      - external-network
     environment:
 
       # user 관련
@@ -49,6 +48,8 @@ services:
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
 
 networks:
+  external-network:
+    external: true
   internal-network:
     external: true
 
