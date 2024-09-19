@@ -19,8 +19,8 @@ public interface HubRouteRepository extends JpaRepository<HubRoute, UUID>, HubRo
     Optional<HubRoute> findByStartHubId(UUID startHubId);
 
     @Modifying
-    @Query("UPDATE HubRoute s SET s.deletedAt = :deletedAt, s.isDeleted = true WHERE s.id = :hubRouteId")
-    void delete(@Param("hubRouteId") UUID hubRouteId, @Param("deletedAt") LocalDateTime deletedAt);
+    @Query("UPDATE HubRoute s SET s.deletedAt = :deletedAt, s.isDeleted = true , s.deletedBy = :deletedBy WHERE s.id = :hubRouteId")
+    void delete(@Param("hubRouteId") UUID hubRouteId, @Param("deletedAt") LocalDateTime deletedAt, @Param("deletedBy") String deletedBy);
 
     @Query("SELECT h FROM HubRoute h WHERE h.startHubName = :startHubName")
     Optional<HubRoute> findFirstByUsernames(@Param("startHubName") String startHubName);

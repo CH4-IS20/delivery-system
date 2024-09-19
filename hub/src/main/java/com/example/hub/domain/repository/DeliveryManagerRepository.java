@@ -16,10 +16,12 @@ import java.util.UUID;
 public interface DeliveryManagerRepository extends JpaRepository<DeliveryManager, UUID>,DeliveryManagerRepositoryCustom {
 
     @Modifying
-    @Query("UPDATE DeliveryManager s SET s.deletedAt = :deletedAt, s.isDeleted = true WHERE s.id = :deliveryManagerId")
-    void delete(@Param("deliveryManagerId") UUID deliveryManagerId, @Param("deletedAt")LocalDateTime deletedAt);
+    @Query("UPDATE DeliveryManager s SET s.deletedAt = :deletedAt, s.isDeleted = true, s.deletedBy = :deletedBy WHERE s.id = :deliveryManagerId")
+    void delete(@Param("deliveryManagerId") UUID deliveryManagerId, @Param("deletedAt")LocalDateTime deletedAt, @Param("deletedBy")String deletedBy);
 
 
-    @Query("SELECT d FROM DeliveryManager d WHERE d.status = false AND d.hub = null")
+    @Query("SELECT d FROM DeliveryManager d WHERE d.status = false AND d.hub IS NULL")
     Optional<List<DeliveryManager>> findHubDelievery();
+
+
 }
