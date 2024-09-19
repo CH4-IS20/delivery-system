@@ -22,13 +22,18 @@ services:
       GRAFANA_PORT: ${GRAFANA_PORT}
       GATEWAY_SERVER_CONTAINER_NAME: ${GATEWAY_SERVER_CONTAINER_NAME}
       GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
-
+    networks:
+      - internal-network
+      - external-network
   grafana:
     image: grafana/grafana
     ports:
       - "${GRAFANA_PORT}:${GRAFANA_PORT}"
     depends_on:
       - prometheus
+    networks:
+      - internal-network
+      - external-network
 
 networks:
   external-network:
