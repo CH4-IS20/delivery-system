@@ -53,6 +53,7 @@ public class RoleAuthorizationFilter implements WebFilter {
                         // 해당 경로와 메서드에 대한 정책을 Reactive 방식으로 Redis에서 가져옴
                         getPolicyWithRegex(path, method)
                                 .flatMap(policy -> {
+
                                     // 정책이 없으면 접근이 금지됨 (403 Forbidden)
                                     if (policy == null) {
                                         return responseWriter.writeResponse(exchange, HttpStatus.FORBIDDEN,
@@ -60,10 +61,15 @@ public class RoleAuthorizationFilter implements WebFilter {
                                     }
 
                                     // 인증 정보가 없거나 인증되지 않은 사용자인 경우 접근 금지 (401 Unauthorized)
-                                    if (authentication == null
-                                            || !authentication.isAuthenticated()) {
+                                    if (!authentication.isAuthenticated()) {
                                         return responseWriter.writeResponse(exchange, HttpStatus.UNAUTHORIZED,
                                                 "인증이 필요합니다.");
+                                    }
+
+                                    // MASTER 권한은 통과
+                                    if (authentication.getAuthorities().stream()
+                                            .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_MASTER"))) {
+                                        return chain.filter(exchange);
                                     }
 
                                     // 정책이 "authenticated"인 경우 인증된 사용자만 통과 허용
