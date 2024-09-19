@@ -13,6 +13,15 @@ services:
       - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    environment:
+      PROMETHEUS_HOST: ${PROMETHEUS_HOST}
+      PROMETHEUS_PORT: ${PROMETHEUS_PORT}
+      ZIPKIN_CONTAINER_NAME: ${ZIPKIN_CONTAINER_NAME}
+      ZIPKIN_PORT: ${ZIPKIN_PORT}
+      GRAFANA_CONTAINER_NAME: ${GRAFANA_CONTAINER_NAME}
+      GRAFANA_PORT: ${GRAFANA_PORT}
+      GATEWAY_SERVER_CONTAINER_NAME: ${GATEWAY_SERVER_CONTAINER_NAME}
+      GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
 
   grafana:
     image: grafana/grafana

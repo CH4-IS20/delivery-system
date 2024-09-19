@@ -9,16 +9,9 @@ scrape_configs:
     static_configs:
       - targets: [ '${PROMETHEUS_HOST}:${PROMETHEUS_PORT}' ]
 
-  - job_name: 'docker-services'
+  - job_name: 'gateway-monitor'
     static_configs:
-      - targets:
-          - '${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}'  # Gateway app container
-          - '${ORDER_SERVER_CONTAINER_NAME}:${ORDER_SERVER_PORT}'    # Order app container
-          - '${USER_SERVER_CONTAINER_NAME}:${USER_SERVER_PORT}'     # User app container
-          - '${HUB_SERVER_CONTAINER_NAME}:${HUB_SERVER_PORT}'      # Hub app container
-          - '${COMPANY_SERVER_CONTAINER_NAME}:${COMPANY_SERVER_PORT}'      # Company app container
-          - '${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}'      # Eureka app container
-          - '${POLICY_SERVER_CONTAINER_NAME}:${POLICY_SERVER_PORT}'      # Policy app container
+      - targets: ['${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}']
 
   - job_name: 'monitor-services'
     static_configs:

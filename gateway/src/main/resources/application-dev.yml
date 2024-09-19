@@ -63,7 +63,7 @@ management:
     enabled-by-default: false
     web:
       exposure:
-        include: health, info, metrics
+        include: health, info, metrics, prometheus, gateway
   zipkin:
     tracing:
       endpoint: http://${ZIPKIN_CONTAINER_NAME}:${ZIPKIN_PORT}/api/v2/spans
