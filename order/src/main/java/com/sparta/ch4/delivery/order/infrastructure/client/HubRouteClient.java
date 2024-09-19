@@ -19,6 +19,6 @@ public interface HubRouteClient {
     CommonResponse<List<HubRouteForOrderResponse>> getHubRouteForOrder(
             @RequestParam(name = "supplierId") UUID supplierId,
             @RequestParam(name = "receiverId") UUID receiverId,
-            @RequestHeader(value = "X-User-Id") String userId
+            @RequestHeader(value = "X-UserId") String userId
     );
 }
