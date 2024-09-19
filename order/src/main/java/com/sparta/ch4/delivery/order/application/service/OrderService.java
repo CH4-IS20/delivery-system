@@ -63,9 +63,9 @@ public class OrderService {
             );
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
 
-            // 3. 수령업체 정보를 통해 [최종 배송지 및 수령업체 유저 정보] 요청
+            // 3. 수령업체 정보 검증
             CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(orderCreatDto.receiverId());
-            if (companyResponse.getData() == null & companyResponse.getStatus() != 200) {
+            if (companyResponse.getData() == null) {
                 throw new ApplicationException(COMPANY_CLIENT_ERROR);
             }
 

@@ -2,11 +2,13 @@ package com.sparta.ch4.delivery.user.presentation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class CommonResponse<T> {
 
     private int status;
