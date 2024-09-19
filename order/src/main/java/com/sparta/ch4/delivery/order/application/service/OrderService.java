@@ -15,7 +15,6 @@ import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
 import com.sparta.ch4.delivery.order.domain.type.ProductQuantity;
 import com.sparta.ch4.delivery.order.infrastructure.client.CompanyClient;
 import com.sparta.ch4.delivery.order.infrastructure.client.HubRouteClient;
-import com.sparta.ch4.delivery.order.infrastructure.client.ProductClient;
 import com.sparta.ch4.delivery.order.infrastructure.client.request.ProductQuantityUpdateRequest;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.CompanyResponse;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.HubRouteForOrderResponse;
@@ -45,7 +44,6 @@ public class OrderService {
     private final DeliveryDomainService deliveryDomainService;
     private final DeliveryHistoryDomainService deliveryHistoryDomainService;
 
-    private final ProductClient productClient;
     private final CompanyClient companyClient;
     private final HubRouteClient hubRouteClient;
 
@@ -54,12 +52,13 @@ public class OrderService {
     public OrderDto createOrder(OrderCreateDto orderCreatDto) {
         try {
             //1. 상품 재고 확인 요청 및 재고 업데이트
-            productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.DOWN));
+            companyClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.DOWN));
 
             // 2. 공급,수령 업체 ID를 바탕으로 허브 서비스에 [경로, 배송담당자, 예상시간,예상거리] 요청
             CommonResponse<List<HubRouteForOrderResponse>> hubRouteResponse = hubRouteClient.getHubRouteForOrder(
                     orderCreatDto.supplierId(),
-                    orderCreatDto.receiverId()
+                    orderCreatDto.receiverId(),
+                    orderCreatDto.createdBy()
             );
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
 
@@ -86,7 +85,7 @@ public class OrderService {
             return OrderDto.from(order);
         } catch (ApplicationException e) {
             // 감소된 재고 복구 api call
-            productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
+            companyClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
             log.error("주문 생성 실패: ", e);
             throw e;
         }
@@ -115,11 +114,11 @@ public class OrderService {
         }
         // 2. product 재고 콜 -> 줄었는지 늘었는지 체크
         if (order.getQuantity() < dto.quantity()) { //기존 주문보다 늘었다면 차이만큼만 재고 Down 요청
-            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
+            companyClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
                     dto.quantity() - order.getQuantity()
                     , ProductQuantity.DOWN));
         } else if (order.getQuantity() > dto.quantity()) { // 기존 주문보다 줄었다면 차이만큼 재고 UP 요청
-            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
+            companyClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
                     order.getQuantity() - dto.quantity()
                     , ProductQuantity.UP));
         }

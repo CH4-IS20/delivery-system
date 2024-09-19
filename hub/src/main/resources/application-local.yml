@@ -26,6 +26,16 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
+naver:
+  secret:
+    key: ${NAVER_SECRET_KEY}
+  access:
+    key: ${NAVER_ACCESS_KEY}
+
+google:
+  map:
+    key: ${GOOGLE_MAP_KEY}
+
 
 eureka:
   instance:
