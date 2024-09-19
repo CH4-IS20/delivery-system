@@ -4,6 +4,7 @@ import com.example.hub.application.service.DeliveryManagerService;
 import com.example.hub.presentation.request.DeliveryManagerCreateRequest;
 import com.example.hub.presentation.response.CommonResponse;
 import com.example.hub.presentation.response.DeliveryManagerResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public class DeliveryManagerController {
     // 배송담당자 생성     (마스터만 가능)
     @PostMapping
     public CommonResponse<DeliveryManagerResponse> createDeliveryManager(
-            @RequestBody DeliveryManagerCreateRequest request,
+            @RequestBody @Valid DeliveryManagerCreateRequest request,
             @RequestHeader(value = "X-UserId", required = true) String userId
     ){
         return CommonResponse.success(deliveryManagerService.createDeliveryManager(request,userId));
