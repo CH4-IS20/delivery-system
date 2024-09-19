@@ -1,17 +1,31 @@
 package com.sparta.ch4.delivery.order.domain.exception;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
-@AllArgsConstructor
-public class ErrorResponse<T> {
+@Builder
+public class ErrorResponse {
     private HttpStatus status;
     private String message;
+    private Map<String, String> validation;
+
 
     // 에러 반환
-    public static <T> ErrorResponse<T> error(ErrorCode errorCode) {
-        return new ErrorResponse<>(errorCode.getStatus(), errorCode.getMessage());
+    public static ErrorResponse error(ErrorCode errorCode) {
+        return ErrorResponse.builder().status(errorCode.getStatus())
+                .message(errorCode.getMessage()).build();
+    }
+
+    // Request 에러 필드에 대한 처리
+    public void addValidation(String field, String errorMessage) {
+        if (validation == null) {
+            validation = new HashMap<>();
+        }
+        this.validation.put(field, errorMessage);
     }
 }

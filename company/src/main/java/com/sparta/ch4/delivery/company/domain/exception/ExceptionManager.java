@@ -30,6 +30,6 @@ public class ExceptionManager {
         e.getBindingResult().getFieldErrors().forEach(error -> {
             errorResponse.addValidation(error.getField(), error.getDefaultMessage());
         });
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
