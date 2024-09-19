@@ -40,7 +40,7 @@ public class PolicyService {
         policies.put("/api/delivery-managers",
                 Map.of("GET", "ROLE_MASTER,ROLE_HUB_MANAGER", "POST", "ROLE_MASTER"));
         policies.put("/api/delivery-managers/{id}", Map.of(
-                "GET", "ROLE_MASTER,ROLE_DELIVERY_MANAGER,ROLE_HUB_MANAGER",
+                "GET", "ROLE_MASTER,ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER",
                 "PUT", "ROLE_MASTER,ROLE_HUB_MANAGER",
                 "DELETE", "ROLE_MASTER,ROLE_HUB_MANAGER"
         ));
@@ -69,8 +69,8 @@ public class PolicyService {
         policies.put("/api/deliveries", Map.of("GET", "authenticated", "POST", "authenticated"));
         policies.put("/api/deliveries/{id}", Map.of(
                 "GET", "authenticated",
-                "PUT", "ROLE_MASTER,ROLE_DELIVERY_MANAGER,ROLE_HUB_MANAGER",
-                "DELETE", "ROLE_MASTER,ROLE_DELIVERY_MANAGER,ROLE_HUB_MANAGER"
+                "PUT", "ROLE_MASTER,ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER",
+                "DELETE", "ROLE_MASTER,ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER"
         ));
 
 // 허브 관련 엔드포인트
