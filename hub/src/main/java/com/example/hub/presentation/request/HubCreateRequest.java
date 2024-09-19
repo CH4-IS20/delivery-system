@@ -9,12 +9,15 @@ public record HubCreateRequest(
         String name
 ) {
 
-    public static Hub toEntity(String name, String address, double latitude, double longitude){
+    public static Hub toEntity(String name, String address, double latitude, double longitude,String userId){
         return Hub.builder()
                 .name(name)
                 .address(address)
                 .latitude(latitude)
                 .longitude(longitude)
+                .createdBy(userId)
+                .updatedBy(userId)
+                .isDeleted(false)
                 .build();
     }
 }

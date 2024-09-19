@@ -27,12 +27,10 @@ public class HubRouteController {
     // 허브경로 생성
     @GetMapping()
     public CommonResponse<List<HubRouteResponse>> createHubRoute(
-//            @RequestHeader(value = "X-User-Id", required = true) String userId,
-//            @RequestHeader(value = "X-Role", required = true) String role
-            ){
-        // TODO :: Response로 감싸주고, UserId를 Header에서 X-UserId를 통해 받아오는 코드 수정 예정
+            @RequestHeader(value = "X-UserId", required = true) String userId
+    ){
 
-        return CommonResponse.success(hubRoutService.createHubRoute());
+        return CommonResponse.success(hubRoutService.createHubRoute(userId));
     }
 
 
@@ -48,9 +46,10 @@ public class HubRouteController {
     // 허브경로 삭제 (출발지 허브id를 통해 해당 관련된 데이터 모두 삭제)
     @DeleteMapping()
     public CommonResponse<String> deleteHubRoute(
-            @RequestParam(required = false, name = "startHubId") UUID startHubId
+            @RequestParam(required = false, name = "startHubId") UUID startHubId,
+            @RequestHeader(value = "X-UserId", required = true) String userId
     ){
-        hubRoutService.deleteHubRoute(startHubId);
+        hubRoutService.deleteHubRoute(startHubId,userId);
         return CommonResponse.success(startHubId+"에 해당하는 데이터가 삭제되었습니다");
     }
 }

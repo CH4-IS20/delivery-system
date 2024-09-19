@@ -30,16 +30,18 @@ public class HubController {
     @PostMapping
 //    @PreAuthorize("hasRole('ROLE_OWNER')")              // 권한 체크
     @Operation(summary = "허브 생성", description = "유저에 대한 허브 생성(허브 세부내용 작성)")
-    public CommonResponse<HubResponse> createHub(@RequestBody HubCreateRequest request){
-        // TODO :: Response로 감싸주고, UserId를 Header에서 X-UserId를 통해 받아오는 코드 수정 예정
-        return CommonResponse.success(hubService.createHub(request));
+    public CommonResponse<HubResponse> createHub(
+            @RequestBody HubCreateRequest request,
+            @RequestHeader(value = "X-UserId", required = true) String userId
+    ){
+        return CommonResponse.success(hubService.createHub(request,userId));
     }
 
     // 허브 조회
     @GetMapping("/{hubId}")
     @Operation(summary = "허브 세부 조회", description = "특정 허브에 대한 세부 조회")
     public CommonResponse<HubResponse> getHub(@PathVariable(name = "hubId") UUID id){
-        // TODO :: Response로 감싸주는 코드 추가
+
         return CommonResponse.success(hubService.getHub(id));
     }
 
@@ -50,7 +52,6 @@ public class HubController {
     public CommonResponse<Page<HubResponse>> searchHubs(
             @RequestParam(required = false, name = "searchValue") String searchValue,
             @PageableDefault(size = 10, sort = {"createdAt", "updatedAt"}, direction = Sort.Direction.DESC) Pageable pageable){
-        // TODO :: Response로 감싸주는 코드 추가
 
         return CommonResponse.success(hubService.searchHubList(searchValue,pageable));
     }
@@ -58,10 +59,13 @@ public class HubController {
     // 허브 수정
     @PatchMapping("/{hubId}")
     @Operation(summary = "허브 수정", description = "특정 허브에 대한 수정")
-    public CommonResponse<HubResponse> updateHub(@PathVariable(name = "hubId") UUID id, @RequestBody HubCreateRequest request){
-        // TODO :: Response로 감싸주고, UserId를 Header에서 X-UserId를 통해 받아오는 코드 수정 예정
+    public CommonResponse<HubResponse> updateHub(
+            @PathVariable(name = "hubId") UUID id,
+            @RequestBody HubCreateRequest request,
+            @RequestHeader(value = "X-UserId", required = true) String userId
+    ){
 
-        return CommonResponse.success(hubService.updateHub(id,request));
+        return CommonResponse.success(hubService.updateHub(id,request,userId));
     }
 
 
@@ -69,10 +73,12 @@ public class HubController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @DeleteMapping("/{hubId}")
     @Operation(summary = "허브 삭제", description = "특정 허브에 대한 삭제")
-    public CommonResponse<String> deleteHub(@PathVariable(name = "hubId") UUID id){
-        // TODO :: Response로 감싸주고, UserId를 Header에서 X-UserId를 통해 받아오는 코드 수정 예정
+    public CommonResponse<String> deleteHub(
+            @PathVariable(name = "hubId") UUID id,
+            @RequestHeader(value = "X-UserId", required = true) String userId
+    ){
 
-        hubService.deleteHub(id);
+        hubService.deleteHub(id,userId);
 
         return CommonResponse.success(id+"허브에 해당하는 데이터가 삭제되었습니다");
     }
@@ -80,9 +86,9 @@ public class HubController {
     // Order에서 주문받아옴
     @GetMapping("/order")
     public CommonResponse<List<HubRouteForOrderResponse>> getHubRouteForOrder(
-            @RequestParam(name = "supplierId") String supplierId,
-            @RequestParam(name = "receiverId") String receiverId,
-            @RequestHeader(value = "X-User-Id", required = true) String userId
+            @RequestParam(name = "supplierId") UUID supplierId,
+            @RequestParam(name = "receiverId") UUID receiverId,
+            @RequestHeader(value = "X-UserId", required = true) String userId
     ){
         return CommonResponse.success(hubService.getHubRouteForOrder(supplierId,receiverId,userId));
     }

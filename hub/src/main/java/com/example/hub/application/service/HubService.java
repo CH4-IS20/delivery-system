@@ -24,8 +24,8 @@ public class HubService {
 
     // 허브 생성
     @Transactional
-    public HubResponse createHub(HubCreateRequest request){
-        return hubDomainService.createHub(request);
+    public HubResponse createHub(HubCreateRequest request,String userId){
+        return hubDomainService.createHub(request,userId);
     }
 
     // 허브 상세 조회
@@ -42,18 +42,18 @@ public class HubService {
 
     // 허브 수정
     @Transactional
-    public HubResponse updateHub(UUID id, HubCreateRequest request) {
-        return hubDomainService.updateHub(id,request);
+    public HubResponse updateHub(UUID id, HubCreateRequest request,String userId) {
+        return hubDomainService.updateHub(id,request,userId);
     }
 
     // 허브 삭제
     @Transactional
-    public void deleteHub(UUID id) {
-        hubDomainService.deleteHub(id);
+    public void deleteHub(UUID id,String userId) {
+        hubDomainService.deleteHub(id,userId);
     }
 
     // Order에 따른
-    public List<HubRouteForOrderResponse> getHubRouteForOrder(String supplierId, String receiverId, String userId) {
+    public List<HubRouteForOrderResponse> getHubRouteForOrder(UUID supplierId, UUID receiverId, String userId) {
         return bestRouteDomainService.getHubRouteForOrder(supplierId,receiverId,userId);
     }
 }

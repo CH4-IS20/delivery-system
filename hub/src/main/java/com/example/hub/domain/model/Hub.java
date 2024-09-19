@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 //@EntityListeners(value = {AuditingEntityListener.class})
 @Table(name = "p_hub")
-@Builder
+@SuperBuilder
 @Where(clause = "is_deleted is false")
 public class Hub extends BaseEntity {
 
@@ -39,10 +40,11 @@ public class Hub extends BaseEntity {
     @OneToMany(mappedBy = "hub" , cascade = CascadeType.ALL,orphanRemoval = true)
     private List<DeliveryManager> deliveryManagers;
 
-    public void update(HubCreateRequest request, String address, double lat, double lon) {
+    public void update(HubCreateRequest request, String address, double lat, double lon,String userId) {
         this.name = request.name();
         this.address =address ;
         this.latitude = lat;
         this.longitude = lon;
+        setUpdatedBy(userId);
     }
 }

@@ -11,6 +11,8 @@ import com.example.hub.presentation.request.DeliveryManagerCreateRequest;
 import com.example.hub.presentation.response.DeliveryManagerResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class DeliveryManagerDomainService {
     private final HubRepository hubRepository;
 
     // 배송 담당자 생성
-    public DeliveryManagerResponse createDeliveryManager(DeliveryManagerCreateRequest request) {
+    public DeliveryManagerResponse createDeliveryManager(DeliveryManagerCreateRequest request,String userId) {
         // 소속이 업체 배송 담당자라면 해당 허브가 존재하는지 확인
         DeliveryManager deliveryManager;
 
@@ -44,16 +46,17 @@ public class DeliveryManagerDomainService {
             Hub hub = hubRepository.findById(request.hubId())
                     .orElseThrow(() -> new ApplicationException(ErrorCode.HUB_NOT_FOUND));
 
+
             // 해당 허브에 인원이 10명 미만인지 체크
             if(hub.getDeliveryManagers().size() < 10){
-                deliveryManager = DeliveryManagerCreateRequest.to(request,hub);
+                deliveryManager = DeliveryManagerCreateRequest.to(request,hub,userId);
 
                 deliveryManagerRepository.save(deliveryManager);
             }else{
                 throw new ApplicationException(ErrorCode.DELIVERY_OVERCROWDED);
             }
         }else{
-            deliveryManager = DeliveryManagerCreateRequest.to(request,null);        // 허브 이동 담당자는 제한된 허브가 없으므로 hub쪽은 null값 넣어줌
+            deliveryManager = DeliveryManagerCreateRequest.to(request,null,userId);        // 허브 이동 담당자는 제한된 허브가 없으므로 hub쪽은 null값 넣어줌
             deliveryManagerRepository.save(deliveryManager);
         }
 
@@ -80,12 +83,19 @@ public class DeliveryManagerDomainService {
         return DeliveryManagerResponse.from(deliveryManager);
     }
 
+    // 배송 담당자 전체 조회
+    @Cacheable("deliveryManagerStore")
+    public List<DeliveryManager> getDeliveryManagers() {
+        return deliveryManagerRepository.findAll();
+    }
+
     // 특정 허브에 대한 전체 조회
     public Page<DeliveryManagerResponse> searchDeliveryManager(String searchValue, Pageable pageable) {
         return deliveryManagerRepository.searchHub(searchValue,pageable);
     }
 
     // 배송 담당자 수정
+    @CacheEvict("deliveryManagerStore")
     public DeliveryManagerResponse updateDeliveryManager(DeliveryManagerCreateRequest request, UUID deliveryManagerId, String userId, String role) {
 
         // TODO : 권한이 허브 관리자일경우 해당 허브 구분(본인의 허브안의 배송 담당자만 관리 가능)
@@ -107,15 +117,16 @@ public class DeliveryManagerDomainService {
                 throw new ApplicationException(ErrorCode.DELIVERY_OVERCROWDED);
             }
 
-            deliveryManager.update(request,hub);
+            deliveryManager.update(request,hub,userId);
         }else{
-            deliveryManager.update(request,null);
+            deliveryManager.update(request,null,userId);
         }
 
         return DeliveryManagerResponse.from(deliveryManager);
     }
 
     // 배송 담당자 삭제
+    @CacheEvict("deliveryManagerStore")
     public void deleteDeliveryManager(UUID deliveryManagerId, String userId, String role) {
 
         LocalDateTime now = LocalDateTime.now();
@@ -125,6 +136,6 @@ public class DeliveryManagerDomainService {
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryManagerId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.DELIVERYMANAGER_NOT_FOUND));
 
-        deliveryManagerRepository.delete(deliveryManagerId,now);
+        deliveryManagerRepository.delete(deliveryManagerId,now,userId);
     }
 }

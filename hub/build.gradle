@@ -48,6 +48,9 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok'
 
+	// cache
+	implementation "org.springframework.boot:spring-boot-starter-cache"
+
 	// db
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'com.h2database:h2'

@@ -19,8 +19,8 @@ public class DeliveryManagerService {
     private final DeliveryManagerDomainService deliveryManagerDomainService;
 
     @Transactional
-    public DeliveryManagerResponse createDeliveryManager(DeliveryManagerCreateRequest request) {
-        return deliveryManagerDomainService.createDeliveryManager(request);
+    public DeliveryManagerResponse createDeliveryManager(DeliveryManagerCreateRequest request,String userId) {
+        return deliveryManagerDomainService.createDeliveryManager(request,userId);
     }
 
     @Transactional(readOnly = true)
