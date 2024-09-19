@@ -22,8 +22,8 @@ public interface HubRepository extends JpaRepository<Hub, UUID>,HubRepositoryCus
 //    void delete(@Param("hubId") UUID hubId, @Param("deletedBy")String deletedBy);
 
     @Modifying
-    @Query("UPDATE Hub s SET s.deletedAt = :deletedAt, s.isDeleted = true WHERE s.id = :hubId")
-    void delete(@Param("hubId") UUID hubId, @Param("deletedAt")LocalDateTime deletedAt);
+    @Query("UPDATE Hub s SET s.deletedAt = :deletedAt, s.isDeleted = true , s.deletedBy = :deletedBy WHERE s.id = :hubId")
+    void delete(@Param("hubId") UUID hubId, @Param("deletedAt")LocalDateTime deletedAt, @Param("deletedBy")String deletedBy);
 
     Optional<Hub> findByName(String name);
 

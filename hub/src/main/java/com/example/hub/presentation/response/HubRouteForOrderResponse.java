@@ -35,8 +35,8 @@ public record HubRouteForOrderResponse(
                 .storeName(storeName)
                 .hubRouteId(null)
                 .deliveryManagerId(deliveryManagerId)
-                .startHubId(hubId)
-                .destHubId(null)
+                .startHubId(null)
+                .destHubId(hubId)
                 .estimatedDistance(estimatedDistance)
                 .estimatedDuration(estimatedDuration)
                 .build();
@@ -47,8 +47,8 @@ public record HubRouteForOrderResponse(
                 .storeName(storeName)
                 .hubRouteId(null)
                 .deliveryManagerId(deliveryManagerId)
-                .startHubId(null)
-                .destHubId(hubId)
+                .startHubId(hubId)
+                .destHubId(null)
                 .estimatedDistance(estimatedDistance)
                 .estimatedDuration(estimatedDuration)
                 .build();

@@ -7,13 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "p_hub_route")
 @Getter
@@ -48,13 +49,16 @@ public class HubRoute extends BaseEntity {
 
 
     // 출발 허브 생성(모든 경우의 수의 시작점이 될 허브)
-    public static HubRoute fromHub(Hub hub) {
+    public static HubRoute fromHub(Hub hub,String userId) {
         return HubRoute.builder()
                 .startHubId(hub.getId())
                 .startHubName(hub.getName())
                 .parent(null)
                 .distance(0)
                 .durationTime(0)
+                .createdBy(userId)
+                .updatedBy(userId)
+                .isDeleted(false)
                 .build();
     }
 

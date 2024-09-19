@@ -14,7 +14,7 @@ public record DeliveryManagerCreateRequest (
         DeliveryManagerType type
 ){
 
-    public static DeliveryManager to(DeliveryManagerCreateRequest request, Hub hub) {
+    public static DeliveryManager to(DeliveryManagerCreateRequest request, Hub hub,String userId) {
         return DeliveryManager.builder()
                 .id(request.userId)
                 .name(request.name())
@@ -22,6 +22,9 @@ public record DeliveryManagerCreateRequest (
                 .slackId(request.slackId())
                 .type(request.type)
                 .status(false)
+                .createdBy(userId)
+                .updatedBy(userId)
+                .isDeleted(false)
                 .build();
     }
 }
