@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 public record DeliveryHistoryDto(
         UUID id,
-        UUID deliveryManagerId,
+        Long deliveryManagerId,
         UUID hubRouteId,
         Integer sequence,
         Float estimatedDistance,

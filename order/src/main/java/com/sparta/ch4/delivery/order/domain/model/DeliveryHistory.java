@@ -24,7 +24,7 @@ public class DeliveryHistory extends BaseEntity {
     private Delivery delivery;
 
     @Column(name = "delivery_manager_id", nullable = false)
-    private UUID deliveryManagerId;     // 배송담당자 ID
+    private Long deliveryManagerId;     // 배송담당자 ID
 
     @Column(name = "hub_route_id", nullable = false)
     private UUID hubRouteId;    // 허브 경로 ID
