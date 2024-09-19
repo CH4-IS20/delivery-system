@@ -24,16 +24,17 @@ public class DeliveryManagerController {
     // 배송담당자 생성     (마스터만 가능)
     @PostMapping
     public CommonResponse<DeliveryManagerResponse> createDeliveryManager(
-            @RequestBody DeliveryManagerCreateRequest request
+            @RequestBody DeliveryManagerCreateRequest request,
+            @RequestHeader(value = "X-UserId", required = true) String userId
     ){
-        return CommonResponse.success(deliveryManagerService.createDeliveryManager(request));
+        return CommonResponse.success(deliveryManagerService.createDeliveryManager(request,userId));
     }
 
     // 배송담당자 세부 확인 (마스터, 배송담당자 본인, 허브 관리자)
     @GetMapping("/{deliveryManagerId}")
     public CommonResponse<DeliveryManagerResponse> readDeliveryManager(
             @PathVariable UUID deliveryManagerId,
-            @RequestHeader(value = "X-User-Id", required = true) String userId,
+            @RequestHeader(value = "X-UserId", required = true) String userId,
             @RequestHeader(value = "X-Role", required = true) String role) {
         return CommonResponse.success(deliveryManagerService.readDeliveryManager(deliveryManagerId,userId,role));
     }
@@ -46,13 +47,13 @@ public class DeliveryManagerController {
     ){
         return CommonResponse.success(deliveryManagerService.searchDeliveryManager(searchValue,pageable));
     }
-    
+
     // 배송 담당자 수정 (마스터, 허브 관리자만 가능)
     @PutMapping("/{deliveryManagerId}")
     public CommonResponse<DeliveryManagerResponse> updateDeliveryManager(
             @RequestBody DeliveryManagerCreateRequest request,
             @PathVariable UUID deliveryManagerId,
-            @RequestHeader(value = "X-User-Id", required = true) String userId,
+            @RequestHeader(value = "X-UserId", required = true) String userId,
             @RequestHeader(value = "X-Role", required = true) String role
     ){
 
@@ -63,7 +64,7 @@ public class DeliveryManagerController {
     @DeleteMapping("/{deliveryManagerId}")
     public CommonResponse<String> deleteDeliveryManager(
             @PathVariable UUID deliveryManagerId,
-            @RequestHeader(value = "X-User-Id", required = true) String userId,
+            @RequestHeader(value = "X-UserId", required = true) String userId,
             @RequestHeader(value = "X-Role", required = true) String role
     ){
         deliveryManagerService.deleteDeliveryManager(deliveryManagerId, userId, role);
