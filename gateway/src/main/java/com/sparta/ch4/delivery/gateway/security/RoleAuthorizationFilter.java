@@ -90,8 +90,7 @@ public class RoleAuthorizationFilter implements WebFilter {
 
                                     // 권한이 맞으면 필터 체인 계속 진행
                                     return chain.filter(exchange);
-                                }));
-
+                                })).switchIfEmpty(responseWriter.writeResponse(exchange, HttpStatus.NOT_FOUND, "정책을 찾을 수 없습니다."));
     }
 
     public Mono<String> getPolicyWithRegex(String path, String method) {
@@ -115,7 +114,8 @@ public class RoleAuthorizationFilter implements WebFilter {
                 path.startsWith("/users/v3/api-docs") ||
                 path.startsWith("/companies/v3/api-docs") ||
                 path.startsWith("/hubs/v3/api-docs") ||
-                path.startsWith("/orders/v3/api-docs");
+                path.startsWith("/orders/v3/api-docs") ||
+                path.startsWith("/actuator");
     }
 
 }
