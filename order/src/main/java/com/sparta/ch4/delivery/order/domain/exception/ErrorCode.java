@@ -17,7 +17,7 @@ public enum ErrorCode {
     DELIVERYMANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송담당자를 찾지 못하였습니다."),
     DELIVERYMANAGER_DUPLICATED(HttpStatus.CONFLICT, "해당 배송담당자는 이미 다른 허브에 배정되었습니다"),
     DUPLICATED_HUBNAME(HttpStatus.CONFLICT, "이미 해당 허브가 존재합니다."),
-
+    HUB_CLIENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "허브 API 요청에 문제가 있습니다."),
     //Company
     COMPANY_CLIENT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "업체 API 요청에 문제가 있습니다."),
 
