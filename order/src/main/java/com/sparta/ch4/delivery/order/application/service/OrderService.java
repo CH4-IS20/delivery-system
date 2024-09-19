@@ -4,6 +4,7 @@ import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderCreateDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
 import com.sparta.ch4.delivery.order.domain.exception.ApplicationException;
+import com.sparta.ch4.delivery.order.domain.exception.ErrorCode;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
 import com.sparta.ch4.delivery.order.domain.model.Order;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.*;
 import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.COMPANY_CLIENT_ERROR;
 import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.PRODUCT_INVALID_ARGUMENT;
 
@@ -61,6 +63,9 @@ public class OrderService {
                     orderCreatDto.createdBy()
             );
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
+            if (!hubRoute.isEmpty()){
+                throw new ApplicationException(HUB_CLIENT_ERROR);
+            }
 
             // 3. 수령업체 정보 검증
             CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(orderCreatDto.receiverId());
@@ -88,8 +93,11 @@ public class OrderService {
             companyClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
             log.error("주문 생성 실패: ", e);
             throw e;
+        } catch (Exception e){
+            companyClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
+            log.error("주문 생성 로직 에러: ", e);
+            throw e;
         }
-
     }
 
 
