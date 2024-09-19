@@ -33,7 +33,7 @@ public class DeliveryManagerController {
     // 배송담당자 세부 확인 (마스터, 배송담당자 본인, 허브 관리자)
     @GetMapping("/{deliveryManagerId}")
     public CommonResponse<DeliveryManagerResponse> readDeliveryManager(
-            @PathVariable UUID deliveryManagerId,
+            @PathVariable Long deliveryManagerId,
             @RequestHeader(value = "X-UserId", required = true) String userId,
             @RequestHeader(value = "X-Role", required = true) String role) {
         return CommonResponse.success(deliveryManagerService.readDeliveryManager(deliveryManagerId,userId,role));
@@ -52,7 +52,7 @@ public class DeliveryManagerController {
     @PutMapping("/{deliveryManagerId}")
     public CommonResponse<DeliveryManagerResponse> updateDeliveryManager(
             @RequestBody DeliveryManagerCreateRequest request,
-            @PathVariable UUID deliveryManagerId,
+            @PathVariable Long deliveryManagerId,
             @RequestHeader(value = "X-UserId", required = true) String userId,
             @RequestHeader(value = "X-Role", required = true) String role
     ){
@@ -63,7 +63,7 @@ public class DeliveryManagerController {
     // 배송 담당자 삭제 (마스터, 허브 관리자만 가능)
     @DeleteMapping("/{deliveryManagerId}")
     public CommonResponse<String> deleteDeliveryManager(
-            @PathVariable UUID deliveryManagerId,
+            @PathVariable Long deliveryManagerId,
             @RequestHeader(value = "X-UserId", required = true) String userId,
             @RequestHeader(value = "X-Role", required = true) String role
     ){

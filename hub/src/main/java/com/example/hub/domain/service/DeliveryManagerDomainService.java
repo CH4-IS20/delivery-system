@@ -64,7 +64,7 @@ public class DeliveryManagerDomainService {
     }
 
     // 배송담당자 세부 조회
-    public DeliveryManagerResponse readDeliveryManager(UUID deliveryManagerId,String userId,String role) {
+    public DeliveryManagerResponse readDeliveryManager(Long deliveryManagerId,String userId,String role) {
 
         // 현재 찾고 싶은 deliveryMangerId값을 통해 찾아온 데이터
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryManagerId)
@@ -75,7 +75,7 @@ public class DeliveryManagerDomainService {
         // 배송담당자일 경우
         if(role.equals("HUB_DELIVERY")){
             // 배송담당자이지만 현재 로그인한 사람의 정보가 아닐 경우
-            if(deliveryManagerId != UUID.fromString(userId)){
+            if(!deliveryManagerId.equals(Long.parseLong(userId))){
                 throw new ApplicationException(ErrorCode.ACCESS_DENIED);
             }
         }
@@ -96,7 +96,7 @@ public class DeliveryManagerDomainService {
 
     // 배송 담당자 수정
     @CacheEvict("deliveryManagerStore")
-    public DeliveryManagerResponse updateDeliveryManager(DeliveryManagerCreateRequest request, UUID deliveryManagerId, String userId, String role) {
+    public DeliveryManagerResponse updateDeliveryManager(DeliveryManagerCreateRequest request, Long deliveryManagerId, String userId, String role) {
 
         // TODO : 권한이 허브 관리자일경우 해당 허브 구분(본인의 허브안의 배송 담당자만 관리 가능)
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryManagerId)
@@ -127,7 +127,7 @@ public class DeliveryManagerDomainService {
 
     // 배송 담당자 삭제
     @CacheEvict("deliveryManagerStore")
-    public void deleteDeliveryManager(UUID deliveryManagerId, String userId, String role) {
+    public void deleteDeliveryManager(Long deliveryManagerId, String userId, String role) {
 
         LocalDateTime now = LocalDateTime.now();
 

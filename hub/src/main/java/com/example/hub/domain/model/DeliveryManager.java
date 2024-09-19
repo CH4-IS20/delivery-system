@@ -20,7 +20,7 @@ import java.util.UUID;
 public class DeliveryManager extends BaseEntity {
 
     @Id
-    private UUID id;            // 사용자 id와 동일
+    private Long id;            // 사용자 id와 동일
 
     private String name;        // 배송 담당자 이름
 
