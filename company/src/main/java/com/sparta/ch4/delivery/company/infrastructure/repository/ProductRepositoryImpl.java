@@ -5,17 +5,20 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.company.domain.model.Product;
 import com.sparta.ch4.delivery.company.domain.model.QCompany;
 import com.sparta.ch4.delivery.company.domain.model.QProduct;
+import com.sparta.ch4.delivery.company.domain.repository.ProductRepositoryCustom;
 import com.sparta.ch4.delivery.company.domain.type.ProductSearchType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
+@Repository
+public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 

@@ -2,6 +2,7 @@ package com.sparta.ch4.delivery.order.domain.service;
 
 
 import com.sparta.ch4.delivery.order.application.dto.DeliveryStatusUpdateDto;
+import com.sparta.ch4.delivery.order.domain.exception.ApplicationException;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.repository.DeliveryRepository;
 import com.sparta.ch4.delivery.order.domain.type.DeliverySearchType;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.DELIVERY_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -30,7 +33,7 @@ public class DeliveryDomainService {
 
     public Delivery getOne(UUID deliveryId) {
         return deliveryRepository.findById(deliveryId).orElseThrow(
-                ()-> new IllegalArgumentException("ID 에 해당하는 배송 정보가 없습니다.")
+                () -> new ApplicationException(DELIVERY_NOT_FOUND)
         );
     }
 

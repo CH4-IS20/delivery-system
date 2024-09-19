@@ -7,7 +7,7 @@ import com.example.hub.domain.type.DeliveryManagerType;
 import java.util.UUID;
 
 public record DeliveryManagerCreateRequest (
-        UUID userId,
+        Long userId,
         String name,
         UUID hubId,
         String slackId,

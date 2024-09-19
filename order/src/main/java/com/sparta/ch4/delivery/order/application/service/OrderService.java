@@ -3,6 +3,7 @@ package com.sparta.ch4.delivery.order.application.service;
 import com.sparta.ch4.delivery.order.application.dto.DeliveryDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderCreateDto;
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
+import com.sparta.ch4.delivery.order.domain.exception.ApplicationException;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
 import com.sparta.ch4.delivery.order.domain.model.Order;
@@ -14,7 +15,6 @@ import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
 import com.sparta.ch4.delivery.order.domain.type.ProductQuantity;
 import com.sparta.ch4.delivery.order.infrastructure.client.CompanyClient;
 import com.sparta.ch4.delivery.order.infrastructure.client.HubRouteClient;
-import com.sparta.ch4.delivery.order.infrastructure.client.ProductClient;
 import com.sparta.ch4.delivery.order.infrastructure.client.request.ProductQuantityUpdateRequest;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.CompanyResponse;
 import com.sparta.ch4.delivery.order.infrastructure.client.response.HubRouteForOrderResponse;
@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.COMPANY_CLIENT_ERROR;
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.PRODUCT_INVALID_ARGUMENT;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,7 +44,6 @@ public class OrderService {
     private final DeliveryDomainService deliveryDomainService;
     private final DeliveryHistoryDomainService deliveryHistoryDomainService;
 
-    private final ProductClient productClient;
     private final CompanyClient companyClient;
     private final HubRouteClient hubRouteClient;
 
@@ -50,21 +52,20 @@ public class OrderService {
     public OrderDto createOrder(OrderCreateDto orderCreatDto) {
         try {
             //1. 상품 재고 확인 요청 및 재고 업데이트
-            productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.DOWN));
+            companyClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.DOWN));
 
             // 2. 공급,수령 업체 ID를 바탕으로 허브 서비스에 [경로, 배송담당자, 예상시간,예상거리] 요청
             CommonResponse<List<HubRouteForOrderResponse>> hubRouteResponse = hubRouteClient.getHubRouteForOrder(
                     orderCreatDto.supplierId(),
-                    orderCreatDto.receiverId()
+                    orderCreatDto.receiverId(),
+                    orderCreatDto.createdBy()
             );
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
 
-            // 3. 수령업체 정보를 통해 [최종 배송지 및 수령업체 유저 정보] 요청
-
+            // 3. 수령업체 정보 검증
             CommonResponse<CompanyResponse> companyResponse = companyClient.getCompany(orderCreatDto.receiverId());
             if (companyResponse.getData() == null) {
-                // TODO: 커스텀 에러 정의
-                throw new IllegalArgumentException("ID 에 해당하는 업체를 찾을 수 없습니다.");
+                throw new ApplicationException(COMPANY_CLIENT_ERROR);
             }
 
             //주문 관련 객체 프로세스 : 주문 생성 -> 배송 생성 -> 배송 기록 생성
@@ -82,9 +83,9 @@ public class OrderService {
             );
 
             return OrderDto.from(order);
-        } catch (RuntimeException e) {
+        } catch (ApplicationException e) {
             // 감소된 재고 복구 api call
-            productClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
+            companyClient.updateQuantity(orderCreatDto.productId(), ProductQuantityUpdateRequest.from(orderCreatDto.quantity(), ProductQuantity.UP));
             log.error("주문 생성 실패: ", e);
             throw e;
         }
@@ -109,15 +110,15 @@ public class OrderService {
         // 1. order 조회
         Order order = orderDomainService.getOrderById(orderId);
         if (!order.getProductId().equals(dto.productId())) {
-            throw new IllegalArgumentException("ProductId 가 일치하지 않음");
+            throw new ApplicationException(PRODUCT_INVALID_ARGUMENT);
         }
         // 2. product 재고 콜 -> 줄었는지 늘었는지 체크
         if (order.getQuantity() < dto.quantity()) { //기존 주문보다 늘었다면 차이만큼만 재고 Down 요청
-            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
+            companyClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
                     dto.quantity() - order.getQuantity()
                     , ProductQuantity.DOWN));
         } else if (order.getQuantity() > dto.quantity()) { // 기존 주문보다 줄었다면 차이만큼 재고 UP 요청
-            productClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
+            companyClient.updateQuantity(dto.productId(), ProductQuantityUpdateRequest.from(
                     order.getQuantity() - dto.quantity()
                     , ProductQuantity.UP));
         }

@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.order.domain.model.Delivery;
 import com.sparta.ch4.delivery.order.domain.model.QDelivery;
+import com.sparta.ch4.delivery.order.domain.repository.DeliveryRepositoryCustom;
 import com.sparta.ch4.delivery.order.domain.type.DeliverySearchType;
 import com.sparta.ch4.delivery.order.domain.type.DeliveryStatus;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +13,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class DeliveryRepositoryCustomImpl implements DeliveryRepositoryCustom {
+@Repository
+public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     QDelivery delivery = QDelivery.delivery;

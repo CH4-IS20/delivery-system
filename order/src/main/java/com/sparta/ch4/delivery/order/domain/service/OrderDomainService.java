@@ -2,6 +2,7 @@ package com.sparta.ch4.delivery.order.domain.service;
 
 
 import com.sparta.ch4.delivery.order.application.dto.OrderDto;
+import com.sparta.ch4.delivery.order.domain.exception.ApplicationException;
 import com.sparta.ch4.delivery.order.domain.model.Order;
 import com.sparta.ch4.delivery.order.domain.repository.OrderRepository;
 import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.ORDER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -30,7 +33,9 @@ public class OrderDomainService {
     }
 
     public Order getOrderById(UUID orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found By Id"));
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new ApplicationException(ORDER_NOT_FOUND)
+        );
     }
 
     public Order update(Order updatingOrder, OrderDto dto) {

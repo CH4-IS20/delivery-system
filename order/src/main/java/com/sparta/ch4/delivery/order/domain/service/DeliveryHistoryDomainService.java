@@ -2,6 +2,7 @@ package com.sparta.ch4.delivery.order.domain.service;
 
 
 import com.sparta.ch4.delivery.order.application.dto.DeliveryHistoryDto;
+import com.sparta.ch4.delivery.order.domain.exception.ApplicationException;
 import com.sparta.ch4.delivery.order.domain.model.DeliveryHistory;
 import com.sparta.ch4.delivery.order.domain.repository.DeliveryHistoryRepository;
 import com.sparta.ch4.delivery.order.domain.repository.DeliveryRepository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static com.sparta.ch4.delivery.order.domain.exception.ErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -24,7 +27,7 @@ public class DeliveryHistoryDomainService {
 
     public DeliveryHistory getOne(UUID deliveryHistoryId) {
         return deliveryHistoryRepository.findById(deliveryHistoryId).orElseThrow(
-                () -> new IllegalArgumentException("ID 에 해당하는 배송 기록을 찾을 수 없습니다.")
+                () -> new ApplicationException(DELIVERY_HISTORY_NOT_FOUND)
         );
     }
 
@@ -46,7 +49,7 @@ public class DeliveryHistoryDomainService {
 
     public void deleteAll(UUID deliveryId, String userIdForDeletedBy) {
         if (deliveryRepository.existsByIdAndIsDeletedFalse(deliveryId)) { // 삭제되지 않은 배송이라면 에러 반환
-            throw new RuntimeException("삭제되지 않은 배송의 기록은 삭제할 수 없습니다.");
+            throw new ApplicationException(DELIVERY_HISTORY_DELETE_ERROR);
         }
         List<DeliveryHistory> deliveryHistoryList = deliveryHistoryRepository.findAllByDeliveryId(deliveryId);
         deliveryHistoryList.forEach( history -> {

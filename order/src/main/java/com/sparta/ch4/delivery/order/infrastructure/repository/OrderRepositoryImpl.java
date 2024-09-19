@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.order.domain.model.Order;
 import com.sparta.ch4.delivery.order.domain.model.QOrder;
+import com.sparta.ch4.delivery.order.domain.repository.OrderRepositoryCustom;
 import com.sparta.ch4.delivery.order.domain.type.OrderSearchType;
 import com.sparta.ch4.delivery.order.domain.type.OrderStatus;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +21,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
+@Repository
+public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     QOrder order = QOrder.order;

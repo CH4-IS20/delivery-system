@@ -58,7 +58,7 @@ public class DeliveryController {
         return CommonResponse.success(DeliveryResponse.from(deliveryService.getDelivery(deliveryId)));
     }
 
-    @PutMapping("/{deliveryId}/status")
+    @PutMapping("/{deliveryId}")
     @Operation(summary = "배송 수정", description = "배송 수정 API, 배송 현황 업데이트")
     public CommonResponse<DeliveryResponse> updateDeliveryStatus(
             @PathVariable(name = "deliveryId") UUID deliveryId,

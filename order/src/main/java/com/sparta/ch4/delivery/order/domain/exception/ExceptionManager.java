@@ -1,4 +1,4 @@
-package com.sparta.ch4.delivery.company.domain.exception;
+package com.sparta.ch4.delivery.order.domain.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

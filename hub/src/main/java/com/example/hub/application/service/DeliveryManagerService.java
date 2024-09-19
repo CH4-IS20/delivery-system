@@ -24,7 +24,7 @@ public class DeliveryManagerService {
     }
 
     @Transactional(readOnly = true)
-    public DeliveryManagerResponse readDeliveryManager(UUID deliveryManagerId, String userId,String role) {
+    public DeliveryManagerResponse readDeliveryManager(Long deliveryManagerId, String userId,String role) {
         return deliveryManagerDomainService.readDeliveryManager(deliveryManagerId, userId, role);
     }
 
@@ -34,12 +34,12 @@ public class DeliveryManagerService {
     }
 
     @Transactional
-    public DeliveryManagerResponse updateDeliveryManager(DeliveryManagerCreateRequest request, UUID deliveryManagerId, String userId, String role) {
+    public DeliveryManagerResponse updateDeliveryManager(DeliveryManagerCreateRequest request, Long deliveryManagerId, String userId, String role) {
         return deliveryManagerDomainService.updateDeliveryManager(request,deliveryManagerId,userId,role);
     }
 
     @Transactional
-    public void deleteDeliveryManager(UUID deliveryManagerId, String userId, String role) {
+    public void deleteDeliveryManager(Long deliveryManagerId, String userId, String role) {
         deliveryManagerDomainService.deleteDeliveryManager(deliveryManagerId,userId,role);
     }
 }

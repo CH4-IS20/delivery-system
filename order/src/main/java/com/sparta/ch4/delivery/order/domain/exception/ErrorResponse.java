@@ -1,4 +1,4 @@
-package com.sparta.ch4.delivery.user.domain.exception;
+package com.sparta.ch4.delivery.order.domain.exception;
 
 import lombok.Builder;
 import lombok.Getter;
