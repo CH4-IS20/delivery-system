@@ -40,7 +40,7 @@ public class PolicyService {
         policies.put("/api/delivery-managers",
                 Map.of("GET", "ROLE_MASTER,ROLE_HUB_MANAGER", "POST", "ROLE_MASTER"));
         policies.put("/api/delivery-managers/{id}", Map.of(
-                "GET", "ROLE_MASTER,ROLE_DELIVERY_MANAGER,ROLE_HUB_MANAGER",
+                "GET", "ROLE_MASTER,ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER",
                 "PUT", "ROLE_MASTER,ROLE_HUB_MANAGER",
                 "DELETE", "ROLE_MASTER,ROLE_HUB_MANAGER"
         ));
@@ -73,14 +73,14 @@ public class PolicyService {
         ));
 
 // 허브 관련 엔드포인트
-        policies.put("/api/hubs", Map.of("POST", "ROLE_MASTER"));
+        policies.put("/api/hubs", Map.of("POST", "ROLE_MASTER", "GET", "authenticated"));
         policies.put("/api/hubs/{id}",
                 Map.of("GET", "authenticated", "PUT", "ROLE_MASTER", "DELETE", "ROLE_MASTER"));
+        policies.put("/api/hubs/order", Map.of("GET", "authenticated"));
 
 // 허브 이동 관리 관련 엔드포인트
-        policies.put("/api/hub-routes", Map.of("POST", "ROLE_MASTER"));
-        policies.put("/api/hub-routes/{id}",
-                Map.of("GET", "authenticated", "PUT", "ROLE_MASTER", "DELETE", "ROLE_MASTER"));
+        policies.put("/api/hub-routes", Map.of("GET", "ROLE_MASTER", "DELETE", "ROLE_MASTER"));
+        policies.put("/api/hub-routes/list", Map.of("GET", "authenticated"));
 
         policies.put("/api/policies/update", Map.of("GET", "ROLE_MASTER"));
 
