@@ -71,6 +71,15 @@ public class PolicyService {
                 "PUT", "ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER",
                 "DELETE", "ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER"
         ));
+        policies.put("/api/delivery-histories/{id}", Map.of(
+                "GET", "authenticated",
+                "PUT", "ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER"
+        ));
+        policies.put("/api/delivery-histories/deliveries/{id}",Map.of(
+                "GET", "authenticated",
+                "DELETE", "ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER"
+        ));
+
 
 // 허브 관련 엔드포인트
         policies.put("/api/hubs", Map.of("POST", "ROLE_MASTER", "GET", "authenticated"));
