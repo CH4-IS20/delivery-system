@@ -12,6 +12,8 @@ import com.example.hub.presentation.response.HubResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,14 +37,20 @@ public class HubDomainService {
 
 
     // 위/경도 구하는 중복 코드 분리
-    public Hub getGeocode(String hubName) {
+    public Hub getGeocode(String hubName,String userId) {
         // Enum에서 Hub에 따른 해당 주소 가져옴
         String hubAddress = "";
-        for(HubAddress hubNames: HubAddress.values()){
-            if(hubNames.name().equals(hubName)){
-                hubAddress = hubNames.getCenterAddress();
+
+        if(hubName.contains("센터")){
+            for(HubAddress hubNames: HubAddress.values()){
+                if(hubNames.name().equals(hubName)){
+                    hubAddress = hubNames.getCenterAddress();
+                }
             }
+        }else{
+            hubAddress = hubName;
         }
+
 
         UriComponents uri = UriComponentsBuilder.newInstance()          // UriComponentsBuilder.newInstance = uri 주소를 직접 조립하여 만든다
                 // https://maps.googleapis.com/maps/api/geocode/json?address="address"&key="API_KEY"와 같음
@@ -57,12 +66,12 @@ public class HubDomainService {
         Double lat = Arrays.stream(response.getResult()).findFirst().get().getGeometry().getLocation().getLat();
         Double lng =Arrays.stream(response.getResult()).findFirst().get().getGeometry().getLocation().getLng();
 
-        return HubCreateRequest.toEntity(hubName,hubAddress,lat,lng);
+        return HubCreateRequest.toEntity(hubName,hubAddress,lat,lng,userId);
     }
 
 
     // 허브 생성
-    public HubResponse createHub(HubCreateRequest request) {
+    public HubResponse createHub(HubCreateRequest request,String userId) {
         // TODO : User 권한 검증 코드 추가 (마스터 관리자만 가능)
 
         // 이미 해당 이름의 허브가 존재한다면
@@ -70,7 +79,8 @@ public class HubDomainService {
             throw new ApplicationException(ErrorCode.DUPLICATED_HUBNAME);
         }
 
-        Hub hub = hubRepository.save(getGeocode(request.name()));
+
+        Hub hub = hubRepository.save(getGeocode(request.name(),userId));
 
         HubDto dto = HubDto.fromEntity(hub);
 
@@ -88,15 +98,23 @@ public class HubDomainService {
 
         return HubResponse.fromDto(dto);
     }
-    
+
+    // 허브 전체 조회
+
+    @Cacheable("hubStore")
+    public List<Hub> getHubAll(){
+        return hubRepository.findAll();
+    }
+
     // 허브 상세 전체 조회
     public Page<HubResponse> searchHubList(String searchValue, Pageable pageable) {
 
         return hubRepository.searchHub(searchValue,pageable);
     }
-    
+
     // 허브 수정
-    public HubResponse updateHub(UUID id, HubCreateRequest request) {
+    @CacheEvict("hubStore")
+    public HubResponse updateHub(UUID id, HubCreateRequest request,String userId) {
         // TODO : User 권한 검증 코드 추가 (마스터 관리자만 가능)
 
         // TODO : 예외처리 Custom으로 변경 예정
@@ -108,8 +126,8 @@ public class HubDomainService {
         // 만약 수정할려고 입력받은 주소 값이 존재하면서 해당 값이 hub에 저장된 값과 다를 경우
         // 새로운 주소이므로 위/경도 다시 받아와야함
         if(request.name() != null){
-            updateHub = getGeocode(request.name());
-            hub.update(request,updateHub.getAddress(),updateHub.getLatitude(),updateHub.getLongitude());
+            updateHub = getGeocode(request.name(),userId);
+            hub.update(request,updateHub.getAddress(),updateHub.getLatitude(),updateHub.getLongitude(),userId);
         }else{
             throw new ApplicationException(ErrorCode.NOTFOUND_VALUE);
         }
@@ -118,7 +136,8 @@ public class HubDomainService {
     }
 
     // 허브 삭제
-    public void deleteHub(UUID id) {
+    @CacheEvict("hubStore")
+    public void deleteHub(UUID id,String userId) {
         LocalDateTime now = LocalDateTime.now();
 
         // TODO : User 권한 검증 코드 추가 (마스터 관리자만 가능)
@@ -128,6 +147,6 @@ public class HubDomainService {
                 .orElseThrow(() -> new EntityNotFoundException("Hub not found"));
 
         // DeleteAt, DeleteBy값 넣어주기 위해 delete메서드 custom
-        hubRepository.delete(hub.getId(),now);
+        hubRepository.delete(hub.getId(),now,userId);
     }
 }

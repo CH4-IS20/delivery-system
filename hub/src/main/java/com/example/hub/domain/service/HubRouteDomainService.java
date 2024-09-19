@@ -13,6 +13,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -37,6 +39,7 @@ public class HubRouteDomainService {
     @Value("${naver.secret.key}")
     private String NAVER_SECRET_KEY;// 실제 서버에서 구동할때는 무조건 환경변수에 숨겨야함 절대 노출되면 안됨!!!
 
+    private final HubDomainService hubDomainService;
 
     private final HubRouteRepository hubRouteRepository;
     private final HubRepository hubRepository;
@@ -77,14 +80,11 @@ public class HubRouteDomainService {
     }
 
 
+    // 허브 경로 생성
+    public List<HubRouteResponse> createHubRoute(String userId) {
 
-    public List<HubRouteResponse> createHubRoute() {
-        // 마스터만 접근 가능
-//        if(!role.equals(UserRole.MASTER)){
-//            throw new ApplicationException(ErrorCode.ACCESS_DENIED);
-//        }
 
-        List<Hub> hubList = hubRepository.findAll();
+        List<Hub> hubList = hubDomainService.getHubAll();
 
         /* Hub에 존재하는 허브 수만큼 반복함
             1. 각 허브별 다른 허브로 이동할때의 거리와 시간을 구해야함
@@ -95,7 +95,7 @@ public class HubRouteDomainService {
 
         for(int i=0; i<hubList.size(); i++){
             Hub hub = hubList.get(i);
-            HubRoute hubRoute = HubRoute.fromHub(hub);      // 기준 시작 hub 생성
+            HubRoute hubRoute = HubRoute.fromHub(hub,userId);      // 기준 시작 hub 생성
 
             for(int j=i+1; j<hubList.size(); j++){
                 double[] temp = new double[2];
@@ -110,8 +110,8 @@ public class HubRouteDomainService {
             }
             hubRouteRepository.save(hubRoute);
         }
-
-        List<HubRouteResponse> hubRouteList =  hubRouteRepository.findAll().stream()
+        List<HubRoute> hubRouteFindList = findHubRouteAll();
+        List<HubRouteResponse> hubRouteList =  hubRouteFindList.stream()
                 .filter(h -> h.getParent() == null)
                 .map(h -> HubRouteResponse.from(h))
                 .collect(Collectors.toList());
@@ -119,10 +119,18 @@ public class HubRouteDomainService {
         return hubRouteList;
     }
 
+    // 허브 경로 전체 출력
+    @Cacheable("hubRouteStore")
+    public List<HubRoute> findHubRouteAll(){
+        return hubRouteRepository.findAll();
+    }
+
+    // 특정 허브에 대한 모든 값 찾기
     public List<HubRouteResponse> searchHubRouteList(UUID startHubId) {
 
         if(startHubId == null){
-            List<HubRouteResponse> hubRouteList =  hubRouteRepository.findAll().stream()
+            List<HubRoute> hubRouteFindList = findHubRouteAll();
+            List<HubRouteResponse> hubRouteList =  hubRouteFindList.stream()
                     .filter(h -> h.getParent() == null)
                     .map(h -> HubRouteResponse.from(h))
                     .collect(Collectors.toList());
@@ -136,7 +144,9 @@ public class HubRouteDomainService {
         }
     }
 
-    public void deleteHubRoute(UUID startHubId) {
+    // 허브 삭제
+    @CacheEvict("hubRouteStore")
+    public void deleteHubRoute(UUID startHubId,String userId) {
         LocalDateTime now = LocalDateTime.now();
 
         // TODO : User 권한 검증 코드 추가 (마스터 관리자만 가능)
@@ -146,6 +156,6 @@ public class HubRouteDomainService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOTFOUND_VALUE));
 
         // DeleteAt, DeleteBy값 넣어주기 위해 delete메서드 custom
-        hubRouteRepository.delete(response.getId(),now);
+        hubRouteRepository.delete(response.getId(),now,userId);
     }
 }
