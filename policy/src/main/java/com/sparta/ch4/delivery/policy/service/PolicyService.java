@@ -46,15 +46,14 @@ public class PolicyService {
         ));
 
 // 업체 관련 엔드포인트
-        policies.put("/api/companies", Map.of("POST", "ROLE_MASTER"));
+        policies.put("/api/companies", Map.of("POST", "ROLE_HUB_MANAGER","GET","ROLE_HUB_COMPANY,ROLE_HUB_MANAGER"));
         policies.put("/api/companies/{id}", Map.of(
-                "GET", "ROLE_MASTER,ROLE_HUB_MANAGER,ROLE_HUB_COMPANY",
-                "DELETE", "ROLE_MASTER,ROLE_HUB_MANAGER,ROLE_HUB_COMPANY"
+                "GET", "ROLE_HUB_MANAGER,ROLE_HUB_COMPANY",
+                "DELETE", "ROLE_HUB_MANAGER,ROLE_HUB_COMPANY"
         ));
-        policies.put("/api/companies/all", Map.of("GET", "ROLE_MASTER,ROLE_HUB_COMPANY"));
 
 // 상품 관련 엔드포인트
-        policies.put("/api/products", Map.of("GET", "ROLE_HUB_MANAGER,ROLE_HUB_COMPANY", "POST",
+        policies.put("/api/products", Map.of("GET", "authenticated", "POST",
                 "ROLE_HUB_MANAGER,ROLE_HUB_COMPANY"));
         policies.put("/api/products/{id}",
                 Map.of("GET", "authenticated", "PUT", "ROLE_HUB_MANAGER,ROLE_HUB_COMPANY", "DELETE",
@@ -63,14 +62,14 @@ public class PolicyService {
 // 주문 관련 엔드포인트
         policies.put("/api/orders", Map.of("GET", "authenticated", "POST", "authenticated"));
         policies.put("/api/orders/{id}",
-                Map.of("GET", "authenticated", "DELETE", "ROLE_MASTER,ROLE_HUB_MANAGER"));
+                Map.of("GET", "authenticated","PUT","ROLE_HUB_MANAGER", "DELETE", "ROLE_HUB_MANAGER"));
 
 // 배송 관련 엔드포인트
         policies.put("/api/deliveries", Map.of("GET", "authenticated", "POST", "authenticated"));
         policies.put("/api/deliveries/{id}", Map.of(
                 "GET", "authenticated",
-                "PUT", "ROLE_MASTER,ROLE_DELIVERY_MANAGER,ROLE_HUB_MANAGER",
-                "DELETE", "ROLE_MASTER,ROLE_DELIVERY_MANAGER,ROLE_HUB_MANAGER"
+                "PUT", "ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER",
+                "DELETE", "ROLE_HUB_DELIVERY,ROLE_HUB_MANAGER"
         ));
 
 // 허브 관련 엔드포인트
