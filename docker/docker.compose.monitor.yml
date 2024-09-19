@@ -4,6 +4,7 @@ services:
     ports:
       - "${ZIPKIN_PORT}:${ZIPKIN_PORT}"
     networks:
+      - internal-network
       - external-network
 
   prometheus:
@@ -11,15 +12,17 @@ services:
     volumes:
       - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
 
   grafana:
     image: grafana/grafana
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
     depends_on:
       - prometheus
 
 networks:
   external-network:
+    external: true
+  internal-network:
     external: true

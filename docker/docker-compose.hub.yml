@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres-data:${HUB_SERVER_DB_VOLUMES}
     networks:
-      - external-network
+      - internal-network
 
   hub-app:
     container_name: hub-app
@@ -25,7 +25,7 @@ services:
     ports:
       - "${HUB_SERVER_PORT}:${HUB_SERVER_PORT}"
     networks:
-      - external-network
+      - internal-network
     environment:
 
       # hub 관련
@@ -47,9 +47,10 @@ services:
       NAVER_SECRET_KEY: ${NAVER_SECRET_KEY}
       NAVER_ACCESS_KEY: ${NAVER_ACCESS_KEY}
       GOOGLE_MAP_KEY: ${GOOGLE_MAP_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
 
 networks:
-  external-network:
+  internal-network:
     external: true
 volumes:
   postgres-data:
