@@ -4,17 +4,20 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.ch4.delivery.company.domain.model.Company;
 import com.sparta.ch4.delivery.company.domain.model.QCompany;
+import com.sparta.ch4.delivery.company.domain.repository.CompanyRepositoryCustom;
 import com.sparta.ch4.delivery.company.domain.type.CompanySearchType;
 import com.sparta.ch4.delivery.company.domain.type.CompanyType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class CompanyRepositoryCustomImpl implements CompanyRepositoryCustom {
+@Repository
+public class CompanyRepositoryImpl implements CompanyRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     QCompany company = QCompany.company;

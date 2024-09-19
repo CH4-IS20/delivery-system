@@ -1,7 +1,6 @@
 package com.sparta.ch4.delivery.company.domain.repository;
 
 import com.sparta.ch4.delivery.company.domain.model.Company;
-import com.sparta.ch4.delivery.company.infrastructure.repository.CompanyRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
