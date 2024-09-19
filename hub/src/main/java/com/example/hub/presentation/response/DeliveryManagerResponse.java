@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Builder
 public record DeliveryManagerResponse(
-        UUID userId,
+        Long userId,
         String name,
         UUID hubId,
         String slackId,

@@ -10,7 +10,7 @@ import java.util.UUID;
 public record HubRouteForOrderResponse(
         String storeName,      // 출발 업체
         UUID hubRouteId,  // 허브 경로 엔티티 ID
-        UUID deliveryManagerId,  //배송담당자
+        Long deliveryManagerId,  //배송담당자
         UUID startHubId, // 시작 허브
         UUID destHubId, //  목적지 허브
         double estimatedDistance,   // 예상 거리
@@ -18,7 +18,7 @@ public record HubRouteForOrderResponse(
 ) {
 
 
-    public static HubRouteForOrderResponse from(HubRoute hubRoute, UUID deliveryManagerId, UUID startHubId) {
+    public static HubRouteForOrderResponse from(HubRoute hubRoute, Long deliveryManagerId, UUID startHubId) {
         return HubRouteForOrderResponse.builder()
                 .storeName(null)
                 .hubRouteId(hubRoute.getId())
@@ -30,7 +30,7 @@ public record HubRouteForOrderResponse(
                 .build();
     }
 
-    public static HubRouteForOrderResponse storeStartFrom(String storeName,UUID hubId, UUID deliveryManagerId, double estimatedDistance, double estimatedDuration) {
+    public static HubRouteForOrderResponse storeStartFrom(String storeName, UUID hubId, Long deliveryManagerId, double estimatedDistance, double estimatedDuration) {
         return HubRouteForOrderResponse.builder()
                 .storeName(storeName)
                 .hubRouteId(null)
@@ -42,7 +42,7 @@ public record HubRouteForOrderResponse(
                 .build();
     }
 
-    public static HubRouteForOrderResponse storeEndFrom(String storeName,UUID hubId,UUID deliveryManagerId, double estimatedDistance, double estimatedDuration) {
+    public static HubRouteForOrderResponse storeEndFrom(String storeName, UUID hubId, Long deliveryManagerId, double estimatedDistance, double estimatedDuration) {
         return HubRouteForOrderResponse.builder()
                 .storeName(storeName)
                 .hubRouteId(null)
