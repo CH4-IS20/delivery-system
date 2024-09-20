@@ -8,13 +8,16 @@
 
 <BR>
 
-### 2. 개발 환경
+### 📚 STACKS
 <img src="https://img.shields.io/badge/Intellij IDEA-000000?style=flat&logo=Intellij IDEA&logoColor=white"/><img src="https://img.shields.io/badge/postman-FF6C37?style=flat&logo=postman&logoColor=white"/><img src="https://img.shields.io/badge/notion-000000?style=flat&logo=notion&logoColor=white"/><img src="https://img.shields.io/badge/slack-4A154B?style=flat&logo=slack&logoColor=white"/><img src="https://img.shields.io/badge/MSA -535D6C?style=flat&logo=awesomewm&logoColor=white"/><img src="https://img.shields.io/badge/swagger -85EA2D?style=flat&logo=swagger&logoColor=white"/>
 <br>
-<img src="https://img.shields.io/badge/Zipkin -FE5F50?style=flat&logo=Zipkin&logoColor=white"/>
+<img src="https://img.shields.io/badge/Zipkin -FE5F50?style=flat&logo=Zipkin&logoColor=white"/><img src="https://img.shields.io/badge/prometheus -E6522C?style=flat&logo=prometheus&logoColor=white"/><img src="https://img.shields.io/badge/grafana -F46800?style=flat&logo=grafana&logoColor=white"/><img src="https://img.shields.io/badge/Docker -2496ED?style=flat&logo=docker&logoColor=white"/>
 <br>
-<img src="https://img.shields.io/badge/Java 17 -C70D2C?style=flat&logo=java&logoColor=white"/><img src="https://img.shields.io/badge/springboot 3.3-6DB33F?style=flat&logo=springboot&logoColor=white"/>
-
+<img src="https://img.shields.io/badge/Java 17 -C70D2C?style=flat&logo=java&logoColor=white"/><img src="https://img.shields.io/badge/springboot 3.3-6DB33F?style=flat&logo=springboot&logoColor=white"/><img src="https://img.shields.io/badge/springsecurity (Auth,JWT)-6DB33F?style=flat&logo=springsecurity&logoColor=white"/><img src="https://img.shields.io/badge/QueryDSL-5395FD?style=flat&logo=QueryDSL&logoColor=white"/>
+<br>
+<img src="https://img.shields.io/badge/postgresql -4169E1?style=flat&logo=postgresql&logoColor=white"/><img src="https://img.shields.io/badge/redis -FF4438?style=flat&logo=redis&logoColor=white"/><img src="https://img.shields.io/badge/H2 -0854C1?style=flat&logo=H2&logoColor=white"/>
+<br>
+<img src="https://img.shields.io/badge/GoogleGemini -8E75B2?style=flat&logo=googlegemini&logoColor=white"/><img src="https://img.shields.io/badge/GoogleGecode -4285F4?style=flat&logo=googlemaps&logoColor=white"/><img src="https://img.shields.io/badge/Naver Direction5 -03C75A?style=flat&logo=naver&logoColor=white"/>
 
 <BR>
 
@@ -91,7 +94,11 @@
 ### 🏭 Hub
 - 물류 허브 간 경로를 관리하고 최적화하여, 허브 간 배송 프로세스를 지원합니다.
 - 허브 간 경로 설정, 주문 처리, 경로 최적화 등의 기능을 통해 운송 효율성을 증대합니다.
-
+- 허브 생성시 Google Gecodeing을 통해 허브의 위치에 따른 위/경도를 구합니다
+- 허브경로 생성시 허브에 Entity에 대해 Self 참조를 하여 구조를 설계합니다.
+- Google Gemini AI를 통해 출발지와 목적지, 모든 허브를 주고 최적의 경로를 추천 받습니다.
+- 추천 받은 경로에 대해서 Naver Direction5를 통해 출발지/도착지 사이의 대한 거리, 시간을 반환 받습니다.
+  
   <details>
   <summary><b>EndPoint</b></summary>
   <div markdown="1">
@@ -116,6 +123,7 @@
 
 ### 🚛 Delivery Managers
 - 배송 관리자 생성, 조회, 수정, 삭제 기능을 제공하여 배송 현장의 관리와 배송 관리자 배정을 지원합니다.
+- 업체 <-> 허브를 담당하는 인원은 10명씩 배정합니다.
 
   <details>
   <summary><b>EndPoint</b></summary>
@@ -193,7 +201,6 @@
 ### 🔐 Auth / User
 - 사용자 로그인, 회원가입과 역할 기반 인증 시스템을 통해 각 사용자(기업, 관리자, 일반 사용자)에게 적합한 권한을 부여합니다.
 
-
   <details>
   <summary><b>EndPoint</b></summary>
   <div markdown="1">
@@ -239,3 +246,11 @@
 </ul>
   </div>
 </details>
+
+<br>
+
+## 💡 Trouble Shooting
+### Error Handling [WIKI](https://github.com/CH4-IS20/delivery-system/wiki/%5BTrouble-Shooting%5D-Error-Handling)
+### Gateway 정책 관리 중앙화에 따른 정책 업데이트 문제 [WIKI](https://github.com/CH4-IS20/delivery-system/wiki/%5BTrouble-Shooting%5D-Gateway-%EC%A0%95%EC%B1%85-%EA%B4%80%EB%A6%AC-%EC%A4%91%EC%95%99%ED%99%94%EC%97%90-%EB%94%B0%EB%A5%B8-%EC%A0%95%EC%B1%85-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8-%EB%AC%B8%EC%A0%9C)
+### Entity 재귀적 구조 변경 [WIKI](https://github.com/CH4-IS20/delivery-system/wiki/%5BTrouble-Shooting%5D-Entity-%EC%9E%AC%EA%B7%80%EC%A0%81-%EA%B5%AC%EC%A1%B0-%EB%B3%80%EA%B2%BD)
+### Resilience4j 도입 시도 [WIKI](https://github.com/CH4-IS20/delivery-system/wiki/%5BTrouble-Shooting%5D-Resilience4j-%EB%8F%84%EC%9E%85-%EC%8B%9C%EB%8F%84)
