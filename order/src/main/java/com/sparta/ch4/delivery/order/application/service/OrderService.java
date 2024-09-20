@@ -63,7 +63,7 @@ public class OrderService {
                     orderCreatDto.createdBy()
             );
             List<HubRouteForOrderResponse> hubRoute = hubRouteResponse.getData();
-            if (!hubRoute.isEmpty()){
+            if (hubRoute.isEmpty()){
                 throw new ApplicationException(HUB_CLIENT_ERROR);
             }
 

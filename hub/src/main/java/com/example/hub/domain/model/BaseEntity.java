@@ -2,6 +2,7 @@ package com.example.hub.domain.model;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -44,9 +45,8 @@ public abstract class BaseEntity {
     private String deletedBy;
 
     @Setter
-    @Column(name = "is_deleted", nullable = false)
+    @Column(name = "is_deleted")
     private Boolean isDeleted;
-
 
     public BaseEntity(){
         this.isDeleted = false;
