@@ -12,6 +12,7 @@ services:
     volumes:
       - postgres-data:${USER_SERVER_DB_VOLUMES}
     networks:
+      - internal-network
       - external-network
 
   user-app:
@@ -22,10 +23,9 @@ services:
     depends_on:
       - user-db
     restart: always
-    ports:
-      - "${USER_SERVER_PORT}:${USER_SERVER_PORT}"
     networks:
-      - external-network # 임시로 외부 네트워크 설정
+      - internal-network
+      - external-network
     environment:
 
       # user 관련
@@ -50,6 +50,8 @@ services:
 
 networks:
   external-network:
+    external: true
+  internal-network:
     external: true
 
 volumes:

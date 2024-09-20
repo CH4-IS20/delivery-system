@@ -12,6 +12,7 @@ services:
     volumes:
       - postgres-data:${COMPANY_SERVER_DB_VOLUMES}
     networks:
+      - internal-network
       - external-network
 
   company-app:
@@ -25,7 +26,7 @@ services:
     ports:
       - "${COMPANY_SERVER_PORT}:${COMPANY_SERVER_PORT}"
     networks:
-      - external-network
+      - internal-network
     environment:
 
       # company 관련
@@ -44,6 +45,8 @@ services:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
 
 networks:
+  internal-network:
+    external: true
   external-network:
     external: true
 

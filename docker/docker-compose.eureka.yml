@@ -10,7 +10,6 @@ services:
     networks:
       - external-network
       - internal-network
-      - monitoring-network
     environment:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
       EUREKA_SERVER_HOST: ${EUREKA_SERVER_HOST}
@@ -19,6 +18,4 @@ networks:
   external-network:
     external: true
   internal-network:
-    external: true
-  monitoring-network:
     external: true

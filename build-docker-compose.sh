@@ -5,7 +5,6 @@
 echo "Creating networks..."
 docker network create external-network
 docker network create internal-network --internal
-docker network create monitoring-network
 COMPOSE_DIR="./docker"
 
 COMPOSE_FILES=(
@@ -17,6 +16,7 @@ COMPOSE_FILES=(
     "docker-compose.user.yml"
     "docker-compose.hub.yml"
     "docker-compose.gateway.yml"
+    "docker-compose.monitor.yml"
 )
 
 # Docker Compose 파일을 순차적으로 빌드하고 실행

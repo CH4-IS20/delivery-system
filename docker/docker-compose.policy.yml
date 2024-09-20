@@ -8,7 +8,7 @@ services:
     ports:
       - "${POLICY_SERVER_PORT}:${POLICY_SERVER_PORT}"
     networks:
-      - external-network
+      - internal-network
     environment:
       POLICY_SERVER_PORT: ${POLICY_SERVER_PORT}
       POLICY_SERVER_HOST: ${POLICY_SERVER_HOST}
@@ -17,5 +17,5 @@ services:
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
 
 networks:
-  external-network:
+  internal-network:
     external: true

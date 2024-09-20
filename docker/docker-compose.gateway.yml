@@ -10,7 +10,6 @@ services:
     networks:
       - external-network
       - internal-network
-      - monitoring-network
     environment:
 
       # gateway 관련
@@ -38,6 +37,4 @@ networks:
   external-network:
     external: true
   internal-network:
-    external: true
-  monitoring-network:
     external: true
