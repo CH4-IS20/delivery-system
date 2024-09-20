@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'delivery-monitor'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ '${PROMETHEUS_HOST}:${PROMETHEUS_PORT}' ]
+
+  - job_name: 'gateway-monitor'
+    static_configs:
+      - targets: ['${GATEWAY_SERVER_CONTAINER_NAME}:${GATEWAY_SERVER_PORT}']
+
+  - job_name: 'monitor-services'
+    static_configs:
+      - targets:
+          - '${ZIPKIN_CONTAINER_NAME}:${ZIPKIN_PORT}'
+          - '${GRAFANA_CONTAINER_NAME}:${GRAFANA_PORT}'

@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: user
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://${USER_SERVER_DB_CONTAINER_NAME}:${USER_SERVER_DB_PORT}/${USER_SERVER_DB_NAME}
+    username: ${USER_SERVER_DB_USERNAME}
+    password: ${USER_SERVER_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: ${USER_SERVER_PORT}
+
+springdoc:
+  api-docs:
+    path: /users/v3/api-docs
+  swagger-ui:
+    path: /users/swagger-ui.html
+
+eureka:
+  instance:
+    hostname: ${USER_SERVER_CONTAINER_NAME}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  expiration-time: ${JWT_EXPIRATION_TIME}
+
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL}

@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: hub
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${HUB_SERVER_DB_CONTAINER_NAME}:${HUB_SERVER_DB_PORT}/${HUB_SERVER_DB_NAME}
+    username: ${HUB_SERVER_DB_USERNAME}
+    password: ${HUB_SERVER_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: ${HUB_SERVER_PORT}
+
+springdoc:
+  api-docs:
+    path: /hubs/v3/api-docs
+  swagger-ui:
+    path: /hubs/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+naver:
+  secret:
+    key: ${NAVER_SECRET_KEY}
+  access:
+    key: ${NAVER_ACCESS_KEY}
+
+google:
+  map:
+    key: ${GOOGLE_MAP_KEY}
+
+eureka:
+  instance:
+    hostname: ${HUB_SERVER_CONTAINER_NAME}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_CONTAINER_NAME}:${EUREKA_SERVER_PORT}/eureka/
+    register-with-eureka: true  # Eureka 서버에 등록
+    fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
+
+gemini:
+  baseurl: https://generativelanguage.googleapis.com
+googleai:
+  api:
+    key: ${GOOGLE_API_KEY}

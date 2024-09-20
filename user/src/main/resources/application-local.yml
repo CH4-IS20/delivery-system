@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: user
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:test'
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+server:
+  port: ${USER_SERVER_PORT}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /users/v3/api-docs
+  swagger-ui:
+    path: /users/swagger-ui.html
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+eureka:
+  instance:
+    hostname: ${USER_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  expiration-time: ${JWT_EXPIRATION_TIME}
+
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL}

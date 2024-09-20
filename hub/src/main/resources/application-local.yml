@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: hub
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:test'
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: ${HUB_SERVER_PORT}
+
+springdoc:
+  api-docs:
+    path: /hubs/v3/api-docs
+  swagger-ui:
+    path: /hubs/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+naver:
+  secret:
+    key: ${NAVER_SECRET_KEY}
+  access:
+    key: ${NAVER_ACCESS_KEY}
+
+google:
+  map:
+    key: ${GOOGLE_MAP_KEY}
+
+
+eureka:
+  instance:
+    hostname: ${HUB_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
+    register-with-eureka: true  # Eureka 서버에 등록
+    fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
+
+gemini:
+  baseurl: https://generativelanguage.googleapis.com
+googleai:
+  api:
+    key: ${GOOGLE_API_KEY}

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: policy
+  jackson:
+    time-zone: Asia/Seoul
+
+server:
+  port: ${POLICY_SERVER_PORT}
+
+eureka:
+  instance:
+    hostname: ${POLICY_SERVER_HOST}
+  client:
+    service-url:
+      defaultZone: "${EUREKA_SERVER_URL}"
+    register-with-eureka: true
+    fetch-registry: true
+
+redisson:
+  url: redis://${REDIS_HOST}:${REDIS_PORT}
+
+
+

@@ -1,0 +1,42 @@
+services:
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "${ZIPKIN_PORT}:${ZIPKIN_PORT}"
+    networks:
+      - internal-network
+      - external-network
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    environment:
+      PROMETHEUS_HOST: ${PROMETHEUS_HOST}
+      PROMETHEUS_PORT: ${PROMETHEUS_PORT}
+      ZIPKIN_CONTAINER_NAME: ${ZIPKIN_CONTAINER_NAME}
+      ZIPKIN_PORT: ${ZIPKIN_PORT}
+      GRAFANA_CONTAINER_NAME: ${GRAFANA_CONTAINER_NAME}
+      GRAFANA_PORT: ${GRAFANA_PORT}
+      GATEWAY_SERVER_CONTAINER_NAME: ${GATEWAY_SERVER_CONTAINER_NAME}
+      GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
+    networks:
+      - internal-network
+      - external-network
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+    depends_on:
+      - prometheus
+    networks:
+      - internal-network
+      - external-network
+
+networks:
+  external-network:
+    external: true
+  internal-network:
+    external: true

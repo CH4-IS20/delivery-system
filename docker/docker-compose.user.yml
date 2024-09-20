@@ -1,0 +1,58 @@
+services:
+  user-db:
+    image: bitnami/postgresql:16.4.0
+    container_name: user-db
+    environment:
+      POSTGRES_USERNAME: ${USER_SERVER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${USER_SERVER_DB_PASSWORD}
+      POSTGRES_DATABASE: ${USER_SERVER_DB_NAME}
+      POSTGRESQL_PORT_NUMBER: ${USER_SERVER_DB_PORT}
+    ports:
+      - "${USER_SERVER_DB_PORT}:${USER_SERVER_DB_PORT}"
+    volumes:
+      - postgres-data:${USER_SERVER_DB_VOLUMES}
+    networks:
+      - internal-network
+      - external-network
+
+  user-app:
+    container_name: user-app
+    build:
+      context: ../user
+      dockerfile: Dockerfile
+    depends_on:
+      - user-db
+    restart: always
+    networks:
+      - internal-network
+      - external-network
+    environment:
+
+      # user 관련
+      USER_SERVER_CONTAINER_NAME: ${USER_SERVER_CONTAINER_NAME}
+      USER_SERVER_PORT: ${USER_SERVER_PORT}
+
+      # eureka 관련
+      EUREKA_SERVER_CONTAINER_NAME: ${EUREKA_SERVER_CONTAINER_NAME}
+      EUREKA_SERVER_PORT:  ${EUREKA_SERVER_PORT}
+
+      # datasource 관련
+      USER_SERVER_DB_CONTAINER_NAME: ${USER_SERVER_DB_CONTAINER_NAME}
+      USER_SERVER_DB_USERNAME: ${USER_SERVER_DB_USERNAME}
+      USER_SERVER_DB_NAME: ${USER_SERVER_DB_NAME}
+      USER_SERVER_DB_PASSWORD: ${USER_SERVER_DB_PASSWORD}
+      USER_SERVER_DB_PORT: ${USER_SERVER_DB_PORT}
+
+      # 기타 환경 변수 관련
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+
+networks:
+  external-network:
+    external: true
+  internal-network:
+    external: true
+
+volumes:
+  postgres-data:
