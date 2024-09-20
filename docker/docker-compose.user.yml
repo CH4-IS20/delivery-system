@@ -13,6 +13,7 @@ services:
       - postgres-data:${USER_SERVER_DB_VOLUMES}
     networks:
       - internal-network
+      - external-network
 
   user-app:
     container_name: user-app

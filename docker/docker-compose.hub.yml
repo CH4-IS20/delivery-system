@@ -13,6 +13,7 @@ services:
       - postgres-data:${HUB_SERVER_DB_VOLUMES}
     networks:
       - internal-network
+      - external-network
 
   hub-app:
     container_name: hub-app

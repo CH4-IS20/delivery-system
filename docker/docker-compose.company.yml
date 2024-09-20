@@ -13,6 +13,7 @@ services:
       - postgres-data:${COMPANY_SERVER_DB_VOLUMES}
     networks:
       - internal-network
+      - external-network
 
   company-app:
     container_name: company-app
@@ -45,6 +46,8 @@ services:
 
 networks:
   internal-network:
+    external: true
+  external-network:
     external: true
 
 volumes:
