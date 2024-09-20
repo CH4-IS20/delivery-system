@@ -134,7 +134,7 @@ public class BestRouteDomainService {
         // 현재 가능한 업체<->허브 담당 배달기사만 찾기 (업체 -> 허브)
         Hub storeToHub = hubRepository.findByNameDelivery(startHubName)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NO_DELIVERYMANAGER));
-
+        log.info("기사 찾았음...");
         DeliveryManager storeToHubDelivery = storeToHub.getDeliveryManagers().get(0);
         storeToHubDelivery.update(true);        // 배송자 상태 true변경하여 활동중 표시
 
@@ -143,9 +143,9 @@ public class BestRouteDomainService {
 //        hubRouteForOrderResponseList.add(HubRouteForOrderResponse.storeStartFrom(null,closeStartHubId,storeToHubDelivery.getId(),closeDistance,closeDuration));
 
         // 현재 가능한 허브<->업체 담당 배달기사만 찾기(허브 -> 업체)
-        Hub hubToStore = hubRepository.findByNameDelivery(startHubName)
+        Hub hubToStore = hubRepository.findByNameDelivery(endHubName)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NO_DELIVERYMANAGER));
-
+        log.info("기사 찾았음...");
         DeliveryManager hubToStoreDelivery = hubToStore.getDeliveryManagers().get(0);
         hubToStoreDelivery.update(true);        // 배송자 상태 true변경하여 활동중 표시
 
@@ -168,13 +168,14 @@ public class BestRouteDomainService {
 
             String startHubRouteName = routeHub.get(i-1);
             String endHubRouteName = routeHub.get(i);
-
+            log.info("startHubRouteName: {}", startHubRouteName);
+            log.info("endHubRouteName: {}", endHubRouteName);
             HubRoute startHubRoute = hubRouteRepository.findFirstByUsernames(startHubRouteName)
                     .orElseThrow(() -> new ApplicationException(ErrorCode.HUBROUTE_NOT_FOUND));
-
+            log.info("startHubRoute :{}", startHubRoute.getStartHubId());
             HubRoute endHubRoute = hubRouteRepository.findFirstByUsernames(endHubRouteName)
                     .orElseThrow(() -> new ApplicationException(ErrorCode.HUBROUTE_NOT_FOUND));
-
+            log.info("endHubRoute :{}", endHubRoute.getEndHubId());
             HubRoute hubRoute;
             UUID startHubId;
             // startHub -> endHub 가는 구조
@@ -183,7 +184,7 @@ public class BestRouteDomainService {
                         .filter(h -> h.getEndHubName().equals(endHubRouteName))
                         .findFirst()
                         .orElseThrow(() -> new ApplicationException(ErrorCode.HUBROUTE_NOT_FOUND));
-
+                log.info("start -> end");
                 startHubId = startHubRoute.getStartHubId();
             }   // endHub -> startHub 가는 구조
             else{
@@ -191,11 +192,11 @@ public class BestRouteDomainService {
                         .filter(h -> h.getEndHubName().equals(startHubRouteName))
                         .findFirst()
                         .orElseThrow(() -> new ApplicationException(ErrorCode.HUBROUTE_NOT_FOUND));
-
+                log.info("end -> start");
                 startHubId = endHubRoute.getStartHubId();
             }
 
-
+            log.info("로직 통과");
             // 3. 허브 배송 담당 관리자 배정
             // -------------------------------------------------------------------------------------------------------------
             // 현재 배송이 가능하고 허브 담당자만 찾아오기
