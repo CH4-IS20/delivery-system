@@ -56,19 +56,23 @@ public class RoleAuthorizationFilter implements WebFilter {
 
                                     // 정책이 없으면 접근이 금지됨 (403 Forbidden)
                                     if (policy == null) {
-                                        return responseWriter.writeResponse(exchange, HttpStatus.FORBIDDEN,
+                                        return responseWriter.writeResponse(exchange,
+                                                HttpStatus.FORBIDDEN,
                                                 "정책이 설정되지 않았습니다.");
                                     }
 
                                     // 인증 정보가 없거나 인증되지 않은 사용자인 경우 접근 금지 (401 Unauthorized)
                                     if (!authentication.isAuthenticated()) {
-                                        return responseWriter.writeResponse(exchange, HttpStatus.UNAUTHORIZED,
+                                        return responseWriter.writeResponse(exchange,
+                                                HttpStatus.UNAUTHORIZED,
                                                 "인증이 필요합니다.");
                                     }
 
                                     // MASTER 권한은 통과
                                     if (authentication.getAuthorities().stream()
-                                            .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_MASTER"))) {
+                                            .anyMatch(
+                                                    grantedAuthority -> grantedAuthority.getAuthority()
+                                                            .equals("ROLE_MASTER"))) {
                                         return chain.filter(exchange);
                                     }
 
@@ -84,13 +88,16 @@ public class RoleAuthorizationFilter implements WebFilter {
 
                                     // 사용자 권한이 정책과 일치하지 않으면 접근 금지 (403 Forbidden)
                                     if (!hasAccess) {
-                                        return responseWriter.writeResponse(exchange, HttpStatus.FORBIDDEN,
+                                        return responseWriter.writeResponse(exchange,
+                                                HttpStatus.FORBIDDEN,
                                                 "권한이 부족합니다.");
                                     }
 
                                     // 권한이 맞으면 필터 체인 계속 진행
                                     return chain.filter(exchange);
-                                })).switchIfEmpty(responseWriter.writeResponse(exchange, HttpStatus.NOT_FOUND, "정책을 찾을 수 없습니다."));
+                                })).switchIfEmpty(
+                        responseWriter.writeResponse(exchange, HttpStatus.NOT_FOUND,
+                                "인증되지 않았거나, 정책을 찾을 수 없습니다."));
     }
 
     public Mono<String> getPolicyWithRegex(String path, String method) {
