@@ -1,3 +1,3 @@
 rootProject.name = 'user'
 include ':common'
-project(':common').projectDir = file('common/common')
+project(':common').projectDir = file('../common/common')
