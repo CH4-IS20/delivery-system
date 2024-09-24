@@ -2,13 +2,12 @@ package com.sparta.ch4.delivery.user.application.service;
 
 import com.sparta.ch4.delivery.user.application.dto.LoginDto;
 import com.sparta.ch4.delivery.user.application.dto.RegisterDto;
-import com.sparta.ch4.delivery.user.domain.exception.ApplicationException;
-import com.sparta.ch4.delivery.user.domain.exception.ErrorCode;
 import com.sparta.ch4.delivery.user.domain.model.User;
 import com.sparta.ch4.delivery.user.domain.repository.UserRepository;
 import com.sparta.ch4.delivery.user.domain.service.UserDomainService;
 import com.sparta.ch4.delivery.user.infrastructure.jwt.JwtTokenProvider;
 import com.sparta.ch4.delivery.user.presentation.response.UserResponse;
+import com.sparta.ch4.delivery.common.domain.exception.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,7 +45,8 @@ public class AuthService {
 
     private void checkPassword(String inputPassword, String userPassword) {
         if (!passwordEncoder.matches(inputPassword, userPassword)) {
-            throw new ApplicationException(ErrorCode.PASSWORD_MISMATCH);
+            throw new ApplicationException(
+                    ErrorCode.PASSWORD_MISMATCH);
         }
     }
 }
