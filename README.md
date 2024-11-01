@@ -38,7 +38,7 @@
 <br>
 
 ## 인프라 아키텍처
-<img src="https://github.com/user-attachments/assets/2f8cd3e0-0fce-49e3-b164-0aaa8abfd212" width="500" height="500" />
+<img src="https://github.com/user-attachments/assets/a1ddb915-185f-4c47-ba25-11dbce7f08fa" width="500" height="500" />
 
 <br>
 
